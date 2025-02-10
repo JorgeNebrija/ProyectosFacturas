@@ -1,22 +1,23 @@
+package com.example.proyectofacturas.navegacion
+
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.proyectofacturas.vistas.PantallaDetalleFactura
+import com.example.proyectofacturas.vistas.PantallaFacturas
 
 @Composable
 fun NavigationWrapper() {
     val navController = rememberNavController()
 
-    NavHost(
-        navController = navController,
-        startDestination = "pantallaMenu"
-    ) {
-        composable("pantallaMenu") { PantallaMenu(navController) }
-        composable("pantallaCreacionVenta") { PantallaCreacionVenta(navController) }
-        composable("pantallaCreacionCompra") { PantallaCreacionCompra(navController) }
-        composable("pantallaActualizar") { PantallaActualizar(navController) }
-        composable("pantallaBorrar") { PantallaBorrar(navController) }
-        composable("pantallaMostrar") { PantallaMostrar(navController) }
+    NavHost(navController = navController, startDestination = "facturas") {
+        composable("facturas") { PantallaFacturas(navController) }
+        composable("crear_factura") { PantallaCrearFactura(navController) }
+        composable("detalle_factura/{facturaId}") { backStackEntry ->
+            val facturaId = backStackEntry.arguments?.getString("facturaId")
+            facturaId?.let { PantallaDetalleFactura(navController, it) }
+        }
     }
 }
