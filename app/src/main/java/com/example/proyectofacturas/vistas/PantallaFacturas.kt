@@ -66,8 +66,15 @@ fun PantallaFacturas(navController: NavController, viewModel: FacturaViewModel) 
 @Composable
 fun TopBarFacturas() {
     TopAppBar(
-        title = { Text("Facturas", fontSize = 20.sp, fontWeight = FontWeight.Bold) },
-        colors = TopAppBarDefaults.mediumTopAppBarColors(containerColor = Color.White)
+        title = {
+            Text(
+                text = "Facturas",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+            )
+        },
+        colors = TopAppBarDefaults.mediumTopAppBarColors(containerColor = AzulPrincipal)
     )
 }
 
