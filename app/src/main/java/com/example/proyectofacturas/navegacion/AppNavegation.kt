@@ -31,11 +31,11 @@ fun NavigationWrapper() {
             PantallaCrearFactura(navController, facturaViewModel) // Pasar el ViewModel
         }
         composable("detalle_factura/{facturaId}") { backStackEntry ->
-            val facturaId = backStackEntry.arguments?.getString("facturaId")
-            facturaId?.let {
-                PantallaDetalleFactura(navController, it, facturaViewModel) // Pasar el ViewModel
-            }
+            val facturaId = backStackEntry.arguments?.getString("facturaId") ?: ""
+            PantallaDetalleFactura(navController, facturaId, facturaViewModel) // Pasar el ID
         }
+
+
     }
 }
 

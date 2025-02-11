@@ -1,8 +1,9 @@
 package com.example.proyectofacturas.modelos
 
 import com.google.firebase.firestore.Exclude
-import java.io.Serializable
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class Factura(
     @Exclude var id: String? = null,  // ID autogenerado por Firebase
     val numeroFactura: String = "",
@@ -17,4 +18,4 @@ data class Factura(
     val iva: Double = 0.0,
     val irpf: Double = 0.0,
     val total: Double = 0.0
-) : Serializable
+)

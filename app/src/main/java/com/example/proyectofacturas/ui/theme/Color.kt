@@ -12,4 +12,3 @@ val GrisClaro = Color(0xFFB0BEC5)        // Texto secundario y elementos no acti
 val VerdePagado = Color(0xFF66BB6A)      // Color para estados de pago completado
 val NaranjaPendiente = Color(0xFFFFA726) // Color para estados pendientes
 val RojoRetenido = Color(0xFFEF5350)     // Color para facturas en espera
-
