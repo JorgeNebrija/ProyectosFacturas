@@ -11,27 +11,31 @@ import com.example.proyectofacturas.vistas.PantallaDetalleFactura
 import com.example.proyectofacturas.vistas.PantallaFacturas
 import com.example.proyectofacturas.viewmodels.FacturaViewModel
 import com.example.proyectofacturas.vistas.PantallaLogin
+import com.example.proyectofacturas.vistas.PantallaRegistro
 
 @Composable
 fun NavigationWrapper() {
     val navController = rememberNavController()
-    val facturaViewModel: FacturaViewModel = viewModel() //  Crear el ViewModel aquí
+    val facturaViewModel: FacturaViewModel = viewModel() // Crear el ViewModel aquí
 
     NavHost(navController = navController, startDestination = "pantallaLogin") {
 
         composable("pantallaLogin") { PantallaLogin(navController) }
 
+        composable("pantallaRegistro") { PantallaRegistro(navController) } // Nueva pantalla de registro
+
         composable("facturas") {
-            PantallaFacturas(navController, facturaViewModel) //  Pasar el ViewModel
+            PantallaFacturas(navController, facturaViewModel) // Pasar el ViewModel
         }
         composable("crear_factura") {
-            PantallaCrearFactura(navController, facturaViewModel) //  Pasar el ViewModel
+            PantallaCrearFactura(navController, facturaViewModel) // Pasar el ViewModel
         }
         composable("detalle_factura/{facturaId}") { backStackEntry ->
             val facturaId = backStackEntry.arguments?.getString("facturaId")
             facturaId?.let {
-                PantallaDetalleFactura(navController, it, facturaViewModel) //  Pasar el ViewModel
+                PantallaDetalleFactura(navController, it, facturaViewModel) // Pasar el ViewModel
             }
         }
     }
 }
+
