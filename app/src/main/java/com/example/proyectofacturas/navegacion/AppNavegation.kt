@@ -10,13 +10,17 @@ import com.example.proyectofacturas.vistas.PantallaCrearFactura
 import com.example.proyectofacturas.vistas.PantallaDetalleFactura
 import com.example.proyectofacturas.vistas.PantallaFacturas
 import com.example.proyectofacturas.viewmodels.FacturaViewModel
+import com.example.proyectofacturas.vistas.PantallaLogin
 
 @Composable
 fun NavigationWrapper() {
     val navController = rememberNavController()
     val facturaViewModel: FacturaViewModel = viewModel() //  Crear el ViewModel aquí
 
-    NavHost(navController = navController, startDestination = "facturas") {
+    NavHost(navController = navController, startDestination = "pantallaLogin") {
+
+        composable("pantallaLogin") { PantallaLogin(navController) }
+
         composable("facturas") {
             PantallaFacturas(navController, facturaViewModel) //  Pasar el ViewModel
         }
