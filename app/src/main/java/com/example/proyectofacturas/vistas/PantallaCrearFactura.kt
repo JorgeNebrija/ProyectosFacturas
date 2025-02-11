@@ -80,8 +80,7 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
                 .padding(padding)
                 .padding(16.dp)
                 .fillMaxSize()
-                .fillMaxWidth()
-                .background(colorDeFondo), // Aplicamos colorDeFondo
+                .fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             item {
