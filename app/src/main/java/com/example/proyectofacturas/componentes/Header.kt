@@ -27,7 +27,7 @@ fun Header(navController: NavController){
             Image(
                 painter = painterResource(id = R.drawable.freelance_admin_logo),  // Reemplaza con el nombre de tu imagen
                 contentDescription = "Logo de la empresa",
-                modifier = Modifier.size(160.dp)
+                modifier = Modifier.size(170.dp)
                     .clickable {
                         // Funcionalidad de navegación cuando se hace clic en la imagen
                         FuncionalidadNavegacion.irAPantallaFacturas(navController)

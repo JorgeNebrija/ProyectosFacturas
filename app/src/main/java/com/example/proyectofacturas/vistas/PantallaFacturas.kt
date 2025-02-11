@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.proyectofacturas.R
 import com.example.proyectofacturas.componentes.BottomNavigationBar
+import com.example.proyectofacturas.componentes.Header
 import com.example.proyectofacturas.modelos.Factura
 import com.example.proyectofacturas.ui.theme.AzulPrincipal
 import com.example.proyectofacturas.viewmodels.FacturaViewModel
@@ -32,7 +33,7 @@ fun PantallaFacturas(navController: NavController, viewModel: FacturaViewModel) 
     var filtroSeleccionado by remember { mutableStateOf("Todas") }
 
     Scaffold(
-        topBar = { TopBarFacturas() },
+        topBar = { Header(navController = navController) },
         bottomBar = { MostrarBarraNavegacion(navController) } // Llamamos a la función aquí
     ) { padding ->
         Column(modifier = Modifier.padding(padding).fillMaxSize()) {
@@ -55,23 +56,6 @@ fun PantallaFacturas(navController: NavController, viewModel: FacturaViewModel) 
     }
 }
 
-
-// Barra superior
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TopBarFacturas() {
-    TopAppBar(
-        title = {
-            Text(
-                text = "Facturas",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
-            )
-        },
-        colors = TopAppBarDefaults.mediumTopAppBarColors(containerColor = AzulPrincipal)
-    )
-}
 // Barra de navegación
 @Composable
 fun MostrarBarraNavegacion(navController: NavController) {

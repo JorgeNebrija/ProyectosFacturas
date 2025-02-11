@@ -16,6 +16,8 @@ import com.example.proyectofacturas.viewmodels.FacturaViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 import androidx.compose.material3.OutlinedTextField
+import com.example.proyectofacturas.componentes.Header
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewModel) {
@@ -34,10 +36,7 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Crear Factura", color = Color.White) },
-                colors = TopAppBarDefaults.mediumTopAppBarColors(containerColor = AzulPrincipal)
-            )
+            Header(navController = navController)
         }
     ) { padding ->
         LazyColumn(
