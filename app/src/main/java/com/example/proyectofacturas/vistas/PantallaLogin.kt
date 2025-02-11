@@ -85,17 +85,17 @@ fun PantallaLogin(navHostController: NavHostController) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
-        Spacer(modifier = Modifier.height(40.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         // Icono del logo
         Icon(
-            painter = painterResource(id = R.drawable.freelance_admin_logo),
+            painter = painterResource(id = R.drawable.freelance_logo),
             contentDescription = "Logo",
-            modifier = Modifier.size(64.dp),
+            modifier = Modifier.size(200.dp),
             tint = Color(0xFF007AFF)
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         // Título
         Text(
@@ -280,6 +280,7 @@ fun loginUser(
             } else {
                 message.value = "Error: ${task.exception?.message}"
             }
+
         }
     } else {
         message.value = "Por favor completa todos los campos"
