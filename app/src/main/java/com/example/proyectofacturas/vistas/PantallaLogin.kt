@@ -44,7 +44,7 @@ fun PantallaLogin(navHostController: NavHostController) {
 
     // Configuración de Google Sign-In
     val googleSignInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-        .requestIdToken("314609855316-momoqbcv11cil4bu7ru88ktuqten9al2.apps.googleusercontent.com")
+        .requestIdToken("372357498281-bc0r6sjo0fm2uma6n93uc9bev250me6p.apps.googleusercontent.com")
         .requestEmail()
         .build()
     val googleSignInClient = GoogleSignIn.getClient(context, googleSignInOptions)
