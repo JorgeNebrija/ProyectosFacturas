@@ -1,7 +1,6 @@
 package com.example.proyectofacturas.vistas
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,12 +20,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.proyectofacturas.R
-import com.example.proyectofacturas.componentes.BottomNavigationBar
-import com.example.proyectofacturas.componentes.Header
 import com.example.proyectofacturas.modelos.Factura
 import com.example.proyectofacturas.ui.theme.AzulPrincipal
-import com.example.proyectofacturas.ui.theme.colorDeFondo
 import com.example.proyectofacturas.viewmodels.FacturaViewModel
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,10 +33,17 @@ fun PantallaFacturas(navController: NavController, viewModel: FacturaViewModel) 
     var filtroSeleccionado by remember { mutableStateOf("Todas") }
 
     Scaffold(
-        topBar = { Header(navController = navController) },
-        bottomBar = { MostrarBarraNavegacion(navController) } // Llamamos a la función aquí
+        topBar = { TopBarFacturas() },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { navController.navigate("crear_factura") },
+                containerColor = AzulPrincipal
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Añadir Factura", tint = Color.White)
+            }
+        }
     ) { padding ->
-        Column(modifier = Modifier.padding(padding).fillMaxSize().background(colorDeFondo)) {
+        Column(modifier = Modifier.padding(padding).fillMaxSize()) {
             // Barra de filtros
             FiltrosFacturas(filtroSeleccionado) { filtroSeleccionado = it }
 
@@ -58,12 +63,22 @@ fun PantallaFacturas(navController: NavController, viewModel: FacturaViewModel) 
     }
 }
 
-// Barra de navegación
+// Barra superior
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MostrarBarraNavegacion(navController: NavController) {
-    BottomNavigationBar(navController = navController)
+fun TopBarFacturas() {
+    TopAppBar(
+        title = {
+            Text(
+                text = "Facturas",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+            )
+        },
+        colors = TopAppBarDefaults.mediumTopAppBarColors(containerColor = AzulPrincipal)
+    )
 }
-
 
 // Barra de filtros
 @Composable
@@ -95,32 +110,34 @@ fun ListaFacturas(facturas: List<Factura>, navController: NavController) {
     }
 }
 
-
-
+// Elemento de la lista de facturas
 @Composable
 fun ItemFactura(factura: Factura, navController: NavController) {
+    // Convertir la fecha al formato europeo
+    val formattedDate = try {
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) // Suponiendo que viene en este formato
+        val outputFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        val date = inputFormat.parse(factura.fecha)
+        date?.let { outputFormat.format(it) } ?: factura.fecha
+    } catch (e: Exception) {
+        factura.fecha // Si hay error, mostrar la fecha original
+    }
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
-            .clickable { navController.navigate("detalle_factura/${factura.id}") } // Pasamos el ID de la factura
-        ,
-        colors = CardDefaults.cardColors(
-            containerColor = Color.White  // Aquí definimos el color de fondo blanco
-        )
+            .padding(8.dp)
+            .clickable { navController.navigate("detalle_factura/${factura.id}") }
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text("Factura N.º ${factura.numeroFactura}", fontWeight = FontWeight.Bold, fontSize = 18.sp)
             Spacer(modifier = Modifier.height(4.dp))
-            Text("Fecha: ${factura.fecha}", fontSize = 14.sp)
+            Text("Fecha: $formattedDate", fontSize = 14.sp) // Mostrar la fecha formateada
             Spacer(modifier = Modifier.height(4.dp))
             Text("Total: ${factura.total} €", fontWeight = FontWeight.Bold, fontSize = 16.sp)
         }
     }
 }
-
-
 
 // Vista cuando no hay facturas
 @Composable
