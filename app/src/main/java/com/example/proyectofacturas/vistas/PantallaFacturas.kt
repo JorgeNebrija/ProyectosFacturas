@@ -116,6 +116,7 @@ fun ItemFactura(factura: Factura, navController: NavController) {
             .fillMaxWidth()
             .padding(8.dp)
             .clickable { navController.navigate("detalle_factura/${factura.id}") }
+
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text("Factura N.º ${factura.numeroFactura}", fontWeight = FontWeight.Bold, fontSize = 18.sp)
