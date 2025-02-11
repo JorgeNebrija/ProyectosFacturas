@@ -37,12 +37,14 @@ class FacturaViewModel : ViewModel() {
             }
     }
 
-    // Método para agregar una nueva factura a Firebase
     fun agregarFactura(nuevaFactura: Factura) {
+        val nuevaFacturaId = db.collection("facturas").document().id // Genera un ID único
         db.collection("facturas")
-            .add(nuevaFactura.copy(id = null)) // Excluye el campo id para autogenerarlo
+            .document(nuevaFacturaId)
+            .set(nuevaFactura)  // Usa set en lugar de add
             .addOnSuccessListener {
                 cargarFacturas() // Recargar la lista después de añadir una nueva factura
+                println("Factura agregada correctamente con ID: $nuevaFacturaId")
             }
             .addOnFailureListener { exception ->
                 println("Error al agregar la factura: ${exception.message}")
