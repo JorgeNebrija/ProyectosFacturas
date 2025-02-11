@@ -18,6 +18,7 @@ import com.example.proyectofacturas.componentes.BottomNavigationBar
 import com.example.proyectofacturas.componentes.Header
 import com.example.proyectofacturas.modelos.Factura
 import com.example.proyectofacturas.ui.theme.AzulPrincipal
+import com.example.proyectofacturas.ui.theme.colorDeFondo
 import com.example.proyectofacturas.viewmodels.FacturaViewModel
 
 @Composable
@@ -36,6 +37,7 @@ fun PantallaDetalleFactura(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
+                .background(colorDeFondo)
         ) {
             factura?.let {
                 DetalleFactura(it)

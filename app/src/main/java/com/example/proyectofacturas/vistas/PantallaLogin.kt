@@ -23,6 +23,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavHostController
 import com.example.proyectofacturas.R
+import com.example.proyectofacturas.ui.theme.AzulPrincipal
+import com.example.proyectofacturas.ui.theme.colorDeFondo
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
@@ -81,7 +83,7 @@ fun PantallaLogin(navHostController: NavHostController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFEDF1F3)),
+            .background(colorDeFondo),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
@@ -92,7 +94,7 @@ fun PantallaLogin(navHostController: NavHostController) {
             painter = painterResource(id = R.drawable.freelance_admin_logo),
             contentDescription = "Logo",
             modifier = Modifier.size(64.dp),
-            tint = Color(0xFF007AFF)
+            tint = AzulPrincipal
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -174,7 +176,7 @@ fun PantallaLogin(navHostController: NavHostController) {
             Spacer(modifier = Modifier.weight(1f))
             Text(
                 text = "¿Olvidaste tu contraseña?",
-                color = Color(0xFF007AFF),
+                color = AzulPrincipal,
                 modifier = Modifier.clickable { navHostController.navigate("pantallaRecuperarContrasena") }
             )
         }
@@ -189,7 +191,7 @@ fun PantallaLogin(navHostController: NavHostController) {
             modifier = Modifier
                 .fillMaxWidth(0.85f)
                 .height(50.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF007AFF)),
+            colors = ButtonDefaults.buttonColors(containerColor = AzulPrincipal),
             shape = RoundedCornerShape(8.dp)
         ) {
             Text(text = "Iniciar sesión", color = Color.White, fontWeight = FontWeight.SemiBold)
@@ -246,7 +248,7 @@ fun PantallaLogin(navHostController: NavHostController) {
             )
             Text(
                 text = "Registrarse",
-                color = Color(0xFF007AFF),
+                color = AzulPrincipal,
                 fontSize = 14.sp,
                 modifier = Modifier.clickable { navHostController.navigate("PantallaRegistro") }
             )

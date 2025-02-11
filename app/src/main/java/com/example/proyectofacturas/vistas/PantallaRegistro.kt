@@ -26,6 +26,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.navigation.NavHostController
 import com.example.proyectofacturas.R
+import com.example.proyectofacturas.ui.theme.AzulPrincipal
+import com.example.proyectofacturas.ui.theme.colorDeFondo
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -47,7 +49,7 @@ fun PantallaRegistro(navHostController: NavHostController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFEDF1F3)), // Fondo de color claro
+            .background(colorDeFondo), // Fondo de color claro
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
@@ -128,7 +130,7 @@ fun PantallaRegistro(navHostController: NavHostController) {
             modifier = Modifier
                 .fillMaxWidth(0.85f)
                 .height(50.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF007AFF)), // Color del botón
+            colors = ButtonDefaults.buttonColors(containerColor = AzulPrincipal), // Color del botón
             shape = RoundedCornerShape(8.dp)
         ) {
             Text(text = "Registro", color = Color.White, fontWeight = FontWeight.SemiBold)
@@ -156,7 +158,7 @@ fun PantallaRegistro(navHostController: NavHostController) {
             )
             Text(
                 text = "Iniciar sesión",
-                color = Color(0xFF007AFF),
+                color = AzulPrincipal,
                 fontSize = 14.sp,
                 modifier = Modifier.clickable {
                     navHostController.navigate("PantallaLogin")

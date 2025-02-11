@@ -1,6 +1,7 @@
 package com.example.proyectofacturas.vistas
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -24,6 +25,7 @@ import com.example.proyectofacturas.componentes.BottomNavigationBar
 import com.example.proyectofacturas.componentes.Header
 import com.example.proyectofacturas.modelos.Factura
 import com.example.proyectofacturas.ui.theme.AzulPrincipal
+import com.example.proyectofacturas.ui.theme.colorDeFondo
 import com.example.proyectofacturas.viewmodels.FacturaViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -36,7 +38,7 @@ fun PantallaFacturas(navController: NavController, viewModel: FacturaViewModel) 
         topBar = { Header(navController = navController) },
         bottomBar = { MostrarBarraNavegacion(navController) } // Llamamos a la función aquí
     ) { padding ->
-        Column(modifier = Modifier.padding(padding).fillMaxSize()) {
+        Column(modifier = Modifier.padding(padding).fillMaxSize().background(colorDeFondo)) {
             // Barra de filtros
             FiltrosFacturas(filtroSeleccionado) { filtroSeleccionado = it }
 
@@ -101,8 +103,12 @@ fun ItemFactura(factura: Factura, navController: NavController) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
+            .padding(16.dp)
             .clickable { navController.navigate("detalle_factura/${factura.id}") } // Pasamos el ID de la factura
+        ,
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White  // Aquí definimos el color de fondo blanco
+        )
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text("Factura N.º ${factura.numeroFactura}", fontWeight = FontWeight.Bold, fontSize = 18.sp)
