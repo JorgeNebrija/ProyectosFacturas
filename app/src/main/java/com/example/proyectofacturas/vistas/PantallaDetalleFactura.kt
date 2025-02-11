@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.proyectofacturas.componentes.BottomNavigationBar
 import com.example.proyectofacturas.ui.theme.AzulPrincipal
 import com.example.proyectofacturas.viewmodels.FacturaViewModel
 
@@ -34,20 +35,24 @@ fun PantallaDetalleFactura(
 
     Scaffold(
         topBar = { TopBarDetalles() },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = { navController.navigate("crear_factura") },
-                containerColor = AzulPrincipal
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "Añadir Factura", tint = Color.White)
-            }
-        }
+        bottomBar = { BottomNavigationBar(navController = navController) }
     ) { padding ->
-        Column(modifier = Modifier.padding(padding).fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize()
+        ) {
+
+
+            facturas.forEach { factura ->
+                Text("Factura con Nº:${factura.numeroFactura}")
+
+
+            }
+
 
         }
     }
-
 }
 
 // Barra superior
