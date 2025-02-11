@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.proyectofacturas.componentes.BottomNavigationBar
+import com.example.proyectofacturas.componentes.Header
 import com.example.proyectofacturas.modelos.Factura
 import com.example.proyectofacturas.ui.theme.AzulPrincipal
 import com.example.proyectofacturas.viewmodels.FacturaViewModel
@@ -28,7 +29,7 @@ fun PantallaDetalleFactura(
     val factura by facturaViewModel.obtenerFacturaPorId(idFactura).observeAsState()
 
     Scaffold(
-        topBar = { TopBarDetalles() },
+        topBar = { Header(navController) },
         bottomBar = { BottomNavigationBar(navController = navController) }
     ) { padding ->
         Column(
@@ -104,19 +105,4 @@ fun SeccionDetalle(titulo: String, contenido: @Composable ColumnScope.() -> Unit
     }
 }
 
-// Barra superior
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TopBarDetalles() {
-    TopAppBar(
-        title = {
-            Text(
-                text = "Detalles de la Factura",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
-            )
-        },
-        colors = TopAppBarDefaults.mediumTopAppBarColors(containerColor = AzulPrincipal)
-    )
-}
+
