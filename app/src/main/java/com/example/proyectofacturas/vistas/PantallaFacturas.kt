@@ -23,6 +23,8 @@ import com.example.proyectofacturas.R
 import com.example.proyectofacturas.modelos.Factura
 import com.example.proyectofacturas.ui.theme.AzulPrincipal
 import com.example.proyectofacturas.viewmodels.FacturaViewModel
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -111,6 +113,16 @@ fun ListaFacturas(facturas: List<Factura>, navController: NavController) {
 // Elemento de la lista de facturas
 @Composable
 fun ItemFactura(factura: Factura, navController: NavController) {
+    // Convertir la fecha al formato europeo
+    val formattedDate = try {
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) // Suponiendo que viene en este formato
+        val outputFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        val date = inputFormat.parse(factura.fecha)
+        date?.let { outputFormat.format(it) } ?: factura.fecha
+    } catch (e: Exception) {
+        factura.fecha // Si hay error, mostrar la fecha original
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -120,7 +132,7 @@ fun ItemFactura(factura: Factura, navController: NavController) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text("Factura N.º ${factura.numeroFactura}", fontWeight = FontWeight.Bold, fontSize = 18.sp)
             Spacer(modifier = Modifier.height(4.dp))
-            Text("Fecha: ${factura.fecha}", fontSize = 14.sp)
+            Text("Fecha: $formattedDate", fontSize = 14.sp) // Mostrar la fecha formateada
             Spacer(modifier = Modifier.height(4.dp))
             Text("Total: ${factura.total} €", fontWeight = FontWeight.Bold, fontSize = 16.sp)
         }
