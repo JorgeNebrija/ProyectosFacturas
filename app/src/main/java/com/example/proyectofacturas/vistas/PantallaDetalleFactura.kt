@@ -1,25 +1,12 @@
 package com.example.proyectofacturas.vistas
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -28,17 +15,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.proyectofacturas.componentes.BottomNavigationBar
+import com.example.proyectofacturas.modelos.Factura
 import com.example.proyectofacturas.ui.theme.AzulPrincipal
 import com.example.proyectofacturas.viewmodels.FacturaViewModel
 
 @Composable
 fun PantallaDetalleFactura(
     navController: NavHostController,
-    it: String,
+    idFactura: String,
     facturaViewModel: FacturaViewModel
 ) {
-
-    val facturas by facturaViewModel.facturas.observeAsState(emptyList())
+    val factura by facturaViewModel.obtenerFacturaPorId(idFactura).observeAsState()
 
     Scaffold(
         topBar = { TopBarDetalles() },
@@ -49,86 +36,71 @@ fun PantallaDetalleFactura(
                 .padding(padding)
                 .fillMaxSize()
         ) {
-
-
-            facturas.forEach { factura ->
+            factura?.let {
+                DetalleFactura(it)
+            } ?: run {
                 Text(
-                    "Factura con Nº de factura:${factura.numeroFactura}",
-                    fontWeight = FontWeight.Bold,
+                    text = "No se ha encontrado la factura",
+                    fontSize = 18.sp,
+                    color = Color.Gray,
                     modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .padding(top = 24.dp),
-
-                    )
-                Text(
-                    "Fecha de emisión: ${factura.fecha}",
-                    modifier = Modifier.padding(horizontal = 16.dp),
+                        .fillMaxSize()
+                        .wrapContentSize()
                 )
-                Spacer(modifier = Modifier.padding(10.dp))
-                Text(
-                    text = "Datos del emisor",
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    fontWeight = FontWeight.Bold
-                )
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(Color.White)
-                        .padding(16.dp)
-                ) {
-                    Text(text = "Empresa: ${factura.nombre}", color = Color.Black)
-                    Text(text = "NIF: ${factura.cif}", color = Color.Black)
-                    Text(text = "Dirección: ${factura.direccion}", color = Color.Black)
-
-                }
-
-                Spacer(modifier = Modifier.padding(10.dp))
-                Text(
-                    text = "Datos del receptor",
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    fontWeight = FontWeight.Bold
-                )
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(Color.White)
-                        .padding(16.dp)
-                ) {
-                    Text(text = "Cliente: ${factura.cliente}", color = Color.Black)
-                    Text(text = "NIF: ${factura.cifCliente}", color = Color.Black)
-                    Text(text = "Dirección: ${factura.direccion}", color = Color.Black)
-
-                }
-
-                Spacer(modifier = Modifier.padding(10.dp))
-                Text(
-                    text = "Importes de la factura",
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                )
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(Color.White)
-                        .padding(16.dp)
-                ) {
-                    Text(text = "Base imponible: ${factura.baseImponible}", color = Color.Black)
-                    Text(text = "IVA: ${factura.iva}", color = Color.Black)
-                    Text(text = "Total: ${factura.total}", color = Color.Black)
-
-                }
-
-
             }
-
-
         }
+    }
+}
+
+@Composable
+fun DetalleFactura(factura: Factura) {
+    Column(modifier = Modifier.padding(16.dp)) {
+        Text(
+            "Factura N.º: ${factura.numeroFactura}",
+            fontWeight = FontWeight.Bold,
+            fontSize = 20.sp,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+        Text("Fecha de emisión: ${factura.fecha}")
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        SeccionDetalle("Datos del Emisor") {
+            Text("Empresa: ${factura.nombre}")
+            Text("NIF: ${factura.cif}")
+            Text("Dirección: ${factura.direccion}")
+        }
+
+        SeccionDetalle("Datos del Receptor") {
+            Text("Cliente: ${factura.cliente}")
+            Text("NIF: ${factura.cifCliente}")
+            Text("Dirección: ${factura.direccion}")
+        }
+
+        SeccionDetalle("Importes de la Factura") {
+            Text("Base imponible: ${factura.baseImponible}")
+            Text("IVA: ${factura.iva}")
+            Text("Total: ${factura.total}")
+        }
+    }
+}
+
+@Composable
+fun SeccionDetalle(titulo: String, contenido: @Composable ColumnScope.() -> Unit) {
+    Text(
+        text = titulo,
+        fontWeight = FontWeight.Bold,
+        fontSize = 16.sp,
+        modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
+    )
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(8.dp))
+            .background(Color.White)
+            .padding(16.dp)
+    ) {
+        contenido()
     }
 }
 

@@ -108,15 +108,16 @@ fun ListaFacturas(facturas: List<Factura>, navController: NavController) {
     }
 }
 
-// Elemento de la lista de facturas
+
+
 @Composable
 fun ItemFactura(factura: Factura, navController: NavController) {
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .clickable { navController.navigate("detalle_factura/${factura.id}") }
-
+            .clickable { navController.navigate("detalle_factura/${factura.id}") } // Pasamos el ID de la factura
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text("Factura N.º ${factura.numeroFactura}", fontWeight = FontWeight.Bold, fontSize = 18.sp)
@@ -127,6 +128,8 @@ fun ItemFactura(factura: Factura, navController: NavController) {
         }
     }
 }
+
+
 
 // Vista cuando no hay facturas
 @Composable
