@@ -114,6 +114,7 @@ fun ItemFactura(factura: Factura, navController: NavController) {
             Text("Factura N.º ${factura.numeroFactura}", fontWeight = FontWeight.Bold, fontSize = 18.sp)
             Spacer(modifier = Modifier.height(4.dp))
             Text("Fecha: ${factura.fecha}", fontSize = 14.sp)
+            Spacer(modifier = Modifier.height(4.dp))
             Text("Total: ${factura.total} €", fontWeight = FontWeight.Bold, fontSize = 16.sp)
         }
     }
