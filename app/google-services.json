@@ -12,7 +12,20 @@
           "package_name": "com.example.proyectofacturas"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "372357498281-tuajsvmus3vsrde4s91mfudvgfkhdbaj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.proyectofacturas",
+            "certificate_hash": "07ac35b0aab2a2828f305861f6eed4c2a7042dc9"
+          }
+        },
+        {
+          "client_id": "372357498281-bc0r6sjo0fm2uma6n93uc9bev250me6p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDSWpVp-sfmOnJPTzlM-tKjUi9yE1u57ug"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "372357498281-bc0r6sjo0fm2uma6n93uc9bev250me6p.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
