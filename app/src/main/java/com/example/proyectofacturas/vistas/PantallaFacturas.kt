@@ -66,8 +66,15 @@ fun PantallaFacturas(navController: NavController, viewModel: FacturaViewModel) 
 @Composable
 fun TopBarFacturas() {
     TopAppBar(
-        title = { Text("Facturas", fontSize = 20.sp, fontWeight = FontWeight.Bold) },
-        colors = TopAppBarDefaults.mediumTopAppBarColors(containerColor = Color.White)
+        title = {
+            Text(
+                text = "Facturas",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+            )
+        },
+        colors = TopAppBarDefaults.mediumTopAppBarColors(containerColor = AzulPrincipal)
     )
 }
 
@@ -114,6 +121,7 @@ fun ItemFactura(factura: Factura, navController: NavController) {
             Text("Factura N.º ${factura.numeroFactura}", fontWeight = FontWeight.Bold, fontSize = 18.sp)
             Spacer(modifier = Modifier.height(4.dp))
             Text("Fecha: ${factura.fecha}", fontSize = 14.sp)
+            Spacer(modifier = Modifier.height(4.dp))
             Text("Total: ${factura.total} €", fontWeight = FontWeight.Bold, fontSize = 16.sp)
         }
     }
