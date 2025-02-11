@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.proyectofacturas.R
+import com.example.proyectofacturas.componentes.BottomNavigationBar
 import com.example.proyectofacturas.modelos.Factura
 import com.example.proyectofacturas.ui.theme.AzulPrincipal
 import com.example.proyectofacturas.viewmodels.FacturaViewModel
@@ -32,14 +33,7 @@ fun PantallaFacturas(navController: NavController, viewModel: FacturaViewModel) 
 
     Scaffold(
         topBar = { TopBarFacturas() },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = { navController.navigate("crear_factura") },
-                containerColor = AzulPrincipal
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "Añadir Factura", tint = Color.White)
-            }
-        }
+        bottomBar = { MostrarBarraNavegacion(navController) } // Llamamos a la función aquí
     ) { padding ->
         Column(modifier = Modifier.padding(padding).fillMaxSize()) {
             // Barra de filtros
@@ -61,6 +55,7 @@ fun PantallaFacturas(navController: NavController, viewModel: FacturaViewModel) 
     }
 }
 
+
 // Barra superior
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -77,6 +72,12 @@ fun TopBarFacturas() {
         colors = TopAppBarDefaults.mediumTopAppBarColors(containerColor = AzulPrincipal)
     )
 }
+// Barra de navegación
+@Composable
+fun MostrarBarraNavegacion(navController: NavController) {
+    BottomNavigationBar(navController = navController)
+}
+
 
 // Barra de filtros
 @Composable

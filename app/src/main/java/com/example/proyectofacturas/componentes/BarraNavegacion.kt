@@ -1,54 +1,63 @@
 package com.example.proyectofacturas.componentes
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
+import androidx.navigation.NavController
 import com.example.proyectofacturas.R
 
 @Composable
-fun BottomNavigationBar(navController: NavHostController) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp)
+fun BottomNavigationBar(navController: NavController) {
+    BottomAppBar(
+        containerColor = Color.White,
+        contentColor = Color.Gray,
+        modifier = Modifier.fillMaxWidth()
     ) {
-        NavigationItem(
-            icon = R.drawable.ic_factura,
-            label = "Facturas",
-            onClick = { FuncionalidadNavegacion.irAPantallaFacturas(navController) }
-        )
-        NavigationItem(
-            icon = R.drawable.ic_crear,
-            label = "Crear",
-            onClick = { FuncionalidadNavegacion.irAPantallaCreacion(navController) }
-        )
-        NavigationItem(
-            icon = R.drawable.ic_perfil,
-            label = "Perfil",
-            onClick = { FuncionalidadNavegacion.irAPantallaPerfil(navController) }
-        )
-    }
-}
+        // Primer ícono (Factura)
+        IconButton(
+            onClick = { FuncionalidadNavegacion.irAPantallaFacturas(navController) },
+            modifier = Modifier.weight(1f)
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_factura),
+                contentDescription = "Facturas",
+                tint = Color(0xFF8181A5), // Color de ícono
+                modifier = Modifier.size(28.dp) // Ícono más pequeño
+            )
+        }
 
-@Composable
-fun NavigationItem(icon: Int, label: String, onClick: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .clickable(onClick = onClick)
-            .padding(8.dp)
-    ) {
-        Image(
-            painter = painterResource(id = icon),
-            contentDescription = label
-        )
-        Text(text = label)
+        // Segundo ícono (Crear)
+        IconButton(
+            onClick = { FuncionalidadNavegacion.irAPantallaCreacion(navController) },
+            modifier = Modifier.weight(1f)
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_crear),
+                contentDescription = "Crear Factura",
+                tint = Color(0xFF8181A5),
+                modifier = Modifier.size(28.dp) // Ícono más pequeño
+            )
+        }
+
+        // Tercer ícono (Perfil)
+        IconButton(
+            onClick = { FuncionalidadNavegacion.irAPantallaPerfil(navController) },
+            modifier = Modifier.weight(1f)
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_perfil),
+                contentDescription = "Perfil",
+                tint = Color(0xFF8181A5),
+                modifier = Modifier.size(28.dp) // Ícono más pequeño
+            )
+        }
     }
 }
