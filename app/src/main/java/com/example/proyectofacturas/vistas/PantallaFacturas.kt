@@ -1,6 +1,7 @@
 package com.example.proyectofacturas.vistas
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -20,8 +21,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.proyectofacturas.R
+import com.example.proyectofacturas.componentes.Header
 import com.example.proyectofacturas.modelos.Factura
 import com.example.proyectofacturas.ui.theme.AzulPrincipal
+import com.example.proyectofacturas.ui.theme.Blanco
+import com.example.proyectofacturas.ui.theme.colorDeFondo
 import com.example.proyectofacturas.viewmodels.FacturaViewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -33,17 +37,10 @@ fun PantallaFacturas(navController: NavController, viewModel: FacturaViewModel) 
     var filtroSeleccionado by remember { mutableStateOf("Todas") }
 
     Scaffold(
-        topBar = { TopBarFacturas() },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = { navController.navigate("crear_factura") },
-                containerColor = AzulPrincipal
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "Añadir Factura", tint = Color.White)
-            }
-        }
+        topBar = { Header(navController) },
+        //Meter aquí el BottomNavigationBar
     ) { padding ->
-        Column(modifier = Modifier.padding(padding).fillMaxSize()) {
+        Column(modifier = Modifier.padding(padding).fillMaxSize().background(colorDeFondo)) {
             // Barra de filtros
             FiltrosFacturas(filtroSeleccionado) { filtroSeleccionado = it }
 
@@ -63,28 +60,12 @@ fun PantallaFacturas(navController: NavController, viewModel: FacturaViewModel) 
     }
 }
 
-// Barra superior
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TopBarFacturas() {
-    TopAppBar(
-        title = {
-            Text(
-                text = "Facturas",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
-            )
-        },
-        colors = TopAppBarDefaults.mediumTopAppBarColors(containerColor = AzulPrincipal)
-    )
-}
 
 // Barra de filtros
 @Composable
 fun FiltrosFacturas(filtroSeleccionado: String, onFiltroSeleccionado: (String) -> Unit) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(8.dp),
+        modifier = Modifier.fillMaxWidth().padding(8.dp).padding(top=16.dp, bottom = 16.dp),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         listOf("Todas", "Pagadas", "Pendientes").forEach { filtro ->
@@ -127,7 +108,11 @@ fun ItemFactura(factura: Factura, navController: NavController) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .clickable { navController.navigate("detalle_factura/${factura.id}") }
+            .clickable { navController.navigate("detalle_factura/${factura.id}") },
+        colors = CardDefaults.cardColors(
+            containerColor = Blanco
+        ),
+
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text("Factura N.º ${factura.numeroFactura}", fontWeight = FontWeight.Bold, fontSize = 18.sp)

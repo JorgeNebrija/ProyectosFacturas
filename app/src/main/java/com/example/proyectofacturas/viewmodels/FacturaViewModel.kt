@@ -50,4 +50,31 @@ class FacturaViewModel : ViewModel() {
                 println("Error al agregar la factura: ${exception.message}")
             }
     }
+
+    fun obtenerFacturaPorId(id: String): LiveData<Factura?> {
+        val facturaActual = MutableLiveData<Factura?>()
+
+        db.collection("facturas")
+            .document(id)
+            .get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    val factura = document.toObject<Factura>()?.apply {
+                        this.id = document.id
+                    }
+                    facturaActual.value = factura
+                } else {
+                    facturaActual.value = null
+                    println("No se encontró la factura con ID: $id")
+                }
+            }
+            .addOnFailureListener { exception ->
+                facturaActual.value = null
+                println("Error al obtener la factura: ${exception.message}")
+            }
+
+        return facturaActual
+    }
+
+
 }
