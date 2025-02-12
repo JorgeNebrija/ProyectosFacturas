@@ -20,10 +20,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.proyectofacturas.R
-import com.example.proyectofacturas.componentes.BottomNavigationBar
 import com.example.proyectofacturas.modelos.Factura
 import com.example.proyectofacturas.ui.theme.AzulPrincipal
 import com.example.proyectofacturas.viewmodels.FacturaViewModel
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,7 +34,14 @@ fun PantallaFacturas(navController: NavController, viewModel: FacturaViewModel) 
 
     Scaffold(
         topBar = { TopBarFacturas() },
-        bottomBar = { MostrarBarraNavegacion(navController) } // Llamamos a la función aquí
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { navController.navigate("crear_factura") },
+                containerColor = AzulPrincipal
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Añadir Factura", tint = Color.White)
+            }
+        }
     ) { padding ->
         Column(modifier = Modifier.padding(padding).fillMaxSize()) {
             // Barra de filtros
@@ -55,7 +63,6 @@ fun PantallaFacturas(navController: NavController, viewModel: FacturaViewModel) 
     }
 }
 
-
 // Barra superior
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -72,12 +79,6 @@ fun TopBarFacturas() {
         colors = TopAppBarDefaults.mediumTopAppBarColors(containerColor = AzulPrincipal)
     )
 }
-// Barra de navegación
-@Composable
-fun MostrarBarraNavegacion(navController: NavController) {
-    BottomNavigationBar(navController = navController)
-}
-
 
 // Barra de filtros
 @Composable
@@ -112,6 +113,16 @@ fun ListaFacturas(facturas: List<Factura>, navController: NavController) {
 // Elemento de la lista de facturas
 @Composable
 fun ItemFactura(factura: Factura, navController: NavController) {
+    // Convertir la fecha al formato europeo
+    val formattedDate = try {
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) // Suponiendo que viene en este formato
+        val outputFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        val date = inputFormat.parse(factura.fecha)
+        date?.let { outputFormat.format(it) } ?: factura.fecha
+    } catch (e: Exception) {
+        factura.fecha // Si hay error, mostrar la fecha original
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -121,7 +132,7 @@ fun ItemFactura(factura: Factura, navController: NavController) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text("Factura N.º ${factura.numeroFactura}", fontWeight = FontWeight.Bold, fontSize = 18.sp)
             Spacer(modifier = Modifier.height(4.dp))
-            Text("Fecha: ${factura.fecha}", fontSize = 14.sp)
+            Text("Fecha: $formattedDate", fontSize = 14.sp) // Mostrar la fecha formateada
             Spacer(modifier = Modifier.height(4.dp))
             Text("Total: ${factura.total} €", fontWeight = FontWeight.Bold, fontSize = 16.sp)
         }
