@@ -17,13 +17,13 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.proyectofacturas.R
 import com.example.proyectofacturas.ui.theme.AzulPrincipal
+import com.example.proyectofacturas.ui.theme.Blanco
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Header(navController: NavController){
     TopAppBar(
         title = {
-
             Image(
                 painter = painterResource(id = R.drawable.freelance_admin_logo),  // Reemplaza con el nombre de tu imagen
                 contentDescription = "Logo de la empresa",
@@ -35,6 +35,6 @@ fun Header(navController: NavController){
 
             )
         },
-        colors = TopAppBarDefaults.mediumTopAppBarColors(containerColor = Color.White)
+        colors = TopAppBarDefaults.mediumTopAppBarColors(containerColor = Blanco)
     )
 }
