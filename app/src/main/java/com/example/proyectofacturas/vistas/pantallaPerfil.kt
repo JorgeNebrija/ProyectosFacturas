@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -18,10 +19,10 @@ import androidx.navigation.NavHostController
 import com.example.proyectofacturas.R
 import com.example.proyectofacturas.componentes.BottomNavigationBar
 import com.example.proyectofacturas.componentes.Header
+import com.example.proyectofacturas.ui.theme.colorDeFondo
 import com.example.proyectofacturas.viewmodels.FacturaViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-
 @Composable
 fun PantallaPerfil(navController: NavHostController, facturaViewModel: FacturaViewModel) {
     var userName by remember { mutableStateOf("Cargando...") }
@@ -44,7 +45,7 @@ fun PantallaPerfil(navController: NavHostController, facturaViewModel: FacturaVi
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(colorDeFondo)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -102,19 +103,20 @@ fun PantallaPerfil(navController: NavHostController, facturaViewModel: FacturaVi
         Spacer(modifier = Modifier.height(16.dp))
 
         // Opciones de perfil
-        Column(modifier = Modifier.padding(16.dp)) {
-            PerfilOptionItem(icon = R.drawable.ic_perfil, text = "Profile")
-            PerfilOptionItem(icon = R.drawable.ic_perfil, text = "Favorite")
-            PerfilOptionItem(icon = R.drawable.ic_perfil, text = "Payment Method")
-            PerfilOptionItem(icon = R.drawable.ic_perfil, text = "Privacy Policy")
-            PerfilOptionItem(icon = R.drawable.ic_perfil, text = "Settings")
-            PerfilOptionItem(icon = R.drawable.ic_perfil, text = "Help")
-            PerfilOptionItem(icon = R.drawable.ic_perfil, text = "Logout")
+        Column(
+            modifier = Modifier
+                .padding(20.dp)
+                .weight(1f)  // Esto hará que esta columna ocupe el espacio restante
+        ) {
+            PerfilOptionItem(icon = R.drawable.ic_informacion, text = "Información Personal")
+            PerfilOptionItem(icon = R.drawable.ic_factura, text = "Facturas")
+            PerfilOptionItem(icon = R.drawable.ic_politica, text = "Política de privacidad")
+            PerfilOptionItem(icon = R.drawable.ic_configuraciones, text = "Configuraciones")
+            PerfilOptionItem(icon = R.drawable.ic_ayuda, text = "Ayuda")
+            PerfilOptionItem(icon = R.drawable.ic_cerrar, text = "Cerrar sesión")
         }
-        BottomNavigationBar(navController = navController) }
-
+    }
 }
-
 
 @Composable
 fun PerfilOptionItem(icon: Int, text: String) {
@@ -123,6 +125,8 @@ fun PerfilOptionItem(icon: Int, text: String) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 12.dp)
+            .background(Color.White, shape = RoundedCornerShape(8.dp))  // Fondo blanco con bordes redondeados
+            .padding(horizontal = 16.dp, vertical = 12.dp)  // Ajuste del padding interno
     ) {
         Icon(
             painter = painterResource(id = icon),
