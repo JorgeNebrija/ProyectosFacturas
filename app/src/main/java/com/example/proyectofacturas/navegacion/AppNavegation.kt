@@ -10,7 +10,6 @@ import com.example.proyectofacturas.vistas.PantallaCrearFactura
 import com.example.proyectofacturas.vistas.PantallaDetalleFactura
 import com.example.proyectofacturas.vistas.PantallaFacturas
 import com.example.proyectofacturas.viewmodels.FacturaViewModel
-import com.example.proyectofacturas.vistas.PantallaElegirTipoFactura
 import com.example.proyectofacturas.vistas.PantallaLogin
 import com.example.proyectofacturas.vistas.PantallaRegistro
 
@@ -28,9 +27,6 @@ fun NavigationWrapper() {
         composable("facturas") {
             PantallaFacturas(navController, facturaViewModel) // Pasar el ViewModel
         }
-
-        composable("pantallaElegir") { PantallaElegirTipoFactura(navController) }
-
         composable("crear_factura") {
             PantallaCrearFactura(navController, facturaViewModel) // Pasar el ViewModel
         }
