@@ -79,7 +79,6 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             item {
-                Text("Tipo de Factura", style = MaterialTheme.typography.titleSmall)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
