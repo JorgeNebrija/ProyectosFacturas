@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.proyectofacturas.R
+import com.example.proyectofacturas.componentes.BottomNavigationBar
 import com.example.proyectofacturas.componentes.Header
 import com.example.proyectofacturas.modelos.Factura
 import com.example.proyectofacturas.ui.theme.AzulPrincipal
@@ -38,7 +39,7 @@ fun PantallaFacturas(navController: NavController, viewModel: FacturaViewModel) 
 
     Scaffold(
         topBar = { Header(navController) },
-        //Meter aquí el BottomNavigationBar
+        bottomBar = { BottomNavigationBar(navController = navController) }
     ) { padding ->
         Column(modifier = Modifier.padding(padding).fillMaxSize().background(colorDeFondo)) {
             // Barra de filtros
@@ -59,6 +60,7 @@ fun PantallaFacturas(navController: NavController, viewModel: FacturaViewModel) 
         }
     }
 }
+
 
 
 // Barra de filtros

@@ -12,6 +12,6 @@ object FuncionalidadNavegacion {
     }
 
     fun irAPantallaPerfil(navController: NavController) {
-        navController.navigate("PantallaPerfil")
+        navController.navigate("pantallaPerfil")
     }
 }
