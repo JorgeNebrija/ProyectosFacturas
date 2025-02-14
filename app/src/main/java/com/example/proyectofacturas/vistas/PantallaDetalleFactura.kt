@@ -43,7 +43,7 @@ fun PantallaDetalleFactura(
                 DetalleFactura(it)
             } ?: run {
                 Text(
-                    text = "No se ha encontrado la factura",
+                    text = "Cargando factura...",
                     fontSize = 18.sp,
                     color = Color.Gray,
                     modifier = Modifier
