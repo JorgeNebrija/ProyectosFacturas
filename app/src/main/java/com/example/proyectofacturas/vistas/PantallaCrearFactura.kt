@@ -1,6 +1,5 @@
 package com.example.proyectofacturas.vistas
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
@@ -18,7 +17,6 @@ import java.text.SimpleDateFormat
 import java.util.*
 import com.example.proyectofacturas.componentes.BottomNavigationBar
 import com.example.proyectofacturas.componentes.Header
-import com.example.proyectofacturas.ui.theme.colorDeFondo
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -52,10 +50,7 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
     var numeroFactura by remember { mutableStateOf("") }
     var fecha by remember {
         mutableStateOf(
-            SimpleDateFormat(
-                "yyyy-MM-dd",
-                Locale.getDefault()
-            ).format(Date())
+            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
         )
     }
     var nombre by remember { mutableStateOf("") }
@@ -69,10 +64,10 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
     var irpf by remember { mutableStateOf("0.0") }
     var total by remember { mutableStateOf("0.0") }
 
+    var tipoFactura by remember { mutableStateOf("Compra") } // Estado para la selección de compra o venta
+
     Scaffold(
-        topBar = {
-            Header(navController = navController)
-        },
+        topBar = { Header(navController = navController) },
         bottomBar = { BottomNavigationBar(navController = navController) }
     ) { padding ->
         LazyColumn(
@@ -83,6 +78,32 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
                 .fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            item {
+                Text("Tipo de Factura", style = MaterialTheme.typography.titleSmall)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    Button(
+                        onClick = { tipoFactura = "Compra" },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (tipoFactura == "Compra") AzulPrincipal else Color.Gray
+                        )
+                    ) {
+                        Text("Compra", color = Color.White)
+                    }
+
+                    Button(
+                        onClick = { tipoFactura = "Venta" },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (tipoFactura == "Venta") AzulPrincipal else Color.Gray
+                        )
+                    ) {
+                        Text("Venta", color = Color.White)
+                    }
+                }
+            }
+
             item {
                 InputDeDatos(
                     value = numeroFactura,
@@ -99,10 +120,7 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
                 )
             }
             item {
-                Text(
-                    text = "Datos del Emisor:",
-                    style = MaterialTheme.typography.titleSmall
-                )
+                Text("Datos del Emisor:", style = MaterialTheme.typography.titleSmall)
             }
             item {
                 InputDeDatos(
@@ -126,10 +144,7 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
                 )
             }
             item {
-                Text(
-                    text = "Datos del Cliente:",
-                    style = MaterialTheme.typography.titleSmall
-                )
+                Text("Datos del Cliente:", style = MaterialTheme.typography.titleSmall)
             }
             item {
                 InputDeDatos(
@@ -153,10 +168,7 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
                 )
             }
             item {
-                Text(
-                    text = "Importes de la factura:",
-                    style = MaterialTheme.typography.titleSmall
-                )
+                Text("Importes de la factura:", style = MaterialTheme.typography.titleSmall)
             }
             item {
                 InputDeDatos(
@@ -217,7 +229,8 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
                             baseImponible = baseImponible.toDoubleOrNull() ?: 0.0,
                             iva = iva.toDoubleOrNull() ?: 0.0,
                             irpf = irpf.toDoubleOrNull() ?: 0.0,
-                            total = total.toDoubleOrNull() ?: 0.0
+                            total = total.toDoubleOrNull() ?: 0.0,
+                            tipo = tipoFactura // Guardar el tipo de factura
                         )
                         viewModel.agregarFactura(nuevaFactura)
                         navController.popBackStack()
@@ -229,8 +242,6 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
         }
     }
 }
-
-
 fun calcularTotal(base: String, iva: String, irpf: String): String {
     val baseImponible = base.toDoubleOrNull() ?: 0.0
     val ivaPorcentaje = iva.toDoubleOrNull() ?: 0.0
