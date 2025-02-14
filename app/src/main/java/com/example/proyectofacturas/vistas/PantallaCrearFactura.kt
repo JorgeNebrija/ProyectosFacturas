@@ -50,7 +50,7 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
     var numeroFactura by remember { mutableStateOf("") }
     var fecha by remember {
         mutableStateOf(
-            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+            SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(Date())
         )
     }
     var nombre by remember { mutableStateOf("") }
@@ -64,7 +64,7 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
     var irpf by remember { mutableStateOf("0.0") }
     var total by remember { mutableStateOf("0.0") }
 
-    var tipoFactura by remember { mutableStateOf("Compra") } // Estado para la selección de compra o venta
+    var tipoFactura by remember { mutableStateOf("Compra") } // Estado de selección
 
     Scaffold(
         topBar = { Header(navController = navController) },
@@ -74,10 +74,10 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
             modifier = Modifier
                 .padding(padding)
                 .padding(16.dp)
-                .fillMaxSize()
-                .fillMaxWidth(),
+                .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            // Selección de Compra o Venta
             item {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -103,72 +103,27 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
                 }
             }
 
-            item {
-                InputDeDatos(
-                    value = numeroFactura,
-                    onValueChange = { numeroFactura = it },
-                    label = "Número de Factura"
-                )
+            // Campos comunes
+            item { InputDeDatos(value = numeroFactura, onValueChange = { numeroFactura = it }, label = "Número de Factura") }
+            item { InputDeDatos(value = fecha, onValueChange = { fecha = it }, label = "Fecha de Emisión", enabled = false) }
+
+            when (tipoFactura) {
+                "Compra" -> {
+                    item { Text("Datos del Proveedor:", style = MaterialTheme.typography.titleSmall) }
+                    item { InputDeDatos(value = nombre, onValueChange = { nombre = it }, label = "Proveedor:") }
+                    item { InputDeDatos(value = cifEmisor, onValueChange = { cifEmisor = it }, label = "CIF/NIF del Proveedor") }
+                    item { InputDeDatos(value = direccionEmisor, onValueChange = { direccionEmisor = it }, label = "Dirección del Proveedor") }
+                }
+                "Venta" -> {
+                    item { Text("Datos del Cliente:", style = MaterialTheme.typography.titleSmall) }
+                    item { InputDeDatos(value = cliente, onValueChange = { cliente = it }, label = "Cliente:") }
+                    item { InputDeDatos(value = cifCliente, onValueChange = { cifCliente = it }, label = "CIF/NIF del Cliente") }
+                    item { InputDeDatos(value = direccionCliente, onValueChange = { direccionCliente = it }, label = "Dirección del Cliente") }
+                }
             }
-            item {
-                InputDeDatos(
-                    value = fecha,
-                    onValueChange = { fecha = it },
-                    label = "Fecha de Emisión",
-                    enabled = false
-                )
-            }
-            item {
-                Text("Datos del Emisor:", style = MaterialTheme.typography.titleSmall)
-            }
-            item {
-                InputDeDatos(
-                    value = nombre,
-                    onValueChange = { nombre = it },
-                    label = "Empresa:"
-                )
-            }
-            item {
-                InputDeDatos(
-                    value = cifEmisor,
-                    onValueChange = { cifEmisor = it },
-                    label = "CIF/NIF"
-                )
-            }
-            item {
-                InputDeDatos(
-                    value = direccionEmisor,
-                    onValueChange = { direccionEmisor = it },
-                    label = "Dirección:"
-                )
-            }
-            item {
-                Text("Datos del Cliente:", style = MaterialTheme.typography.titleSmall)
-            }
-            item {
-                InputDeDatos(
-                    value = cliente,
-                    onValueChange = { cliente = it },
-                    label = "Cliente:"
-                )
-            }
-            item {
-                InputDeDatos(
-                    value = cifCliente,
-                    onValueChange = { cifCliente = it },
-                    label = "CIF/NIF"
-                )
-            }
-            item {
-                InputDeDatos(
-                    value = direccionCliente,
-                    onValueChange = { direccionCliente = it },
-                    label = "Dirección:"
-                )
-            }
-            item {
-                Text("Importes de la factura:", style = MaterialTheme.typography.titleSmall)
-            }
+
+            // Importes
+            item { Text("Importes de la factura:", style = MaterialTheme.typography.titleSmall) }
             item {
                 InputDeDatos(
                     value = baseImponible,
@@ -177,8 +132,7 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
                         total = calcularTotal(baseImponible, iva, irpf)
                     },
                     label = "Base Imponible (€)",
-                    keyboardType = KeyboardType.Number,
-                    isNumberInput = true
+                    keyboardType = KeyboardType.Number
                 )
             }
             item {
@@ -189,8 +143,7 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
                         total = calcularTotal(baseImponible, iva, irpf)
                     },
                     label = "IVA (%)",
-                    keyboardType = KeyboardType.Number,
-                    isNumberInput = true
+                    keyboardType = KeyboardType.Number
                 )
             }
             item {
@@ -201,8 +154,7 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
                         total = calcularTotal(baseImponible, iva, irpf)
                     },
                     label = "IRPF (%)",
-                    keyboardType = KeyboardType.Number,
-                    isNumberInput = true
+                    keyboardType = KeyboardType.Number
                 )
             }
             item {
@@ -213,6 +165,8 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
                     enabled = false
                 )
             }
+
+            // Botón de guardar
             item {
                 Button(
                     onClick = {
@@ -229,18 +183,22 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
                             iva = iva.toDoubleOrNull() ?: 0.0,
                             irpf = irpf.toDoubleOrNull() ?: 0.0,
                             total = total.toDoubleOrNull() ?: 0.0,
-                            tipo = tipoFactura // Guardar el tipo de factura
+                            tipo = tipoFactura
                         )
                         viewModel.agregarFactura(nuevaFactura)
                         navController.popBackStack()
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = AzulPrincipal),
                     modifier = Modifier.fillMaxWidth()
-                ) { Text("Guardar y Enviar", color = Color.White) }
+                ) {
+                    Text("Guardar y Enviar", color = Color.White)
+                }
             }
         }
     }
 }
+
+// Función para calcular el total
 fun calcularTotal(base: String, iva: String, irpf: String): String {
     val baseImponible = base.toDoubleOrNull() ?: 0.0
     val ivaPorcentaje = iva.toDoubleOrNull() ?: 0.0
@@ -251,3 +209,4 @@ fun calcularTotal(base: String, iva: String, irpf: String): String {
 
     return String.format("%.2f", baseImponible + ivaCalculado - irpfCalculado)
 }
+

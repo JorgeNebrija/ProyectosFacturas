@@ -6,10 +6,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Factura(
-    @Exclude var id: String? = null,  // ID autogenerado por Firebase
     val numeroFactura: String = "",
     val fecha: String = "",
-    val nombre: String = "",          // Nombre de la empresa o proveedor
+    val nombre: String = "",
     val direccion: String = "",
     val cliente: String = "",
     val direccionCliente: String = "",
@@ -20,7 +19,9 @@ data class Factura(
     val irpf: Double = 0.0,
     val total: Double = 0.0,
     val tipo: String = ""
-)
+) {
+    constructor() : this("", "", "", "", "", "", "", "", 0.0, 0.0, 0.0, 0.0, "")
+}
 sealed class TipoFactura {
     object Compra : TipoFactura()
     object Venta : TipoFactura()

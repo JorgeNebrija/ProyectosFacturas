@@ -19,7 +19,7 @@ fun NavigationWrapper() {
     val navController = rememberNavController()
     val facturaViewModel: FacturaViewModel = viewModel() // Crear el ViewModel aquí
 
-    NavHost(navController = navController, startDestination = "pantallaAutenticacion") {
+    NavHost(navController = navController, startDestination = "pantallaLogin") {
 
         composable("pantallaLogin") { PantallaLogin(navController) }
 

@@ -1,56 +1,58 @@
 package com.example.proyectofacturas.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.proyectofacturas.modelos.Factura
-import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
+import com.google.firebase.ktx.Firebase
+import com.example.proyectofacturas.modelos.Factura
 
 class FacturaViewModel : ViewModel() {
-
-    private val db = FirebaseFirestore.getInstance()
-
-    // LiveData para observar la lista de facturas
-    private val _facturas = MutableLiveData<List<Factura>>(emptyList())
-    val facturas: LiveData<List<Factura>> get() = _facturas
+    private val db = Firebase.firestore
+    private val _facturas = MutableLiveData<List<Factura>>()
+    val facturas: LiveData<List<Factura>> = _facturas
 
     init {
         cargarFacturas()
     }
 
-    // Método para cargar facturas desde Firebase
+    /**
+     * Cargar todas las facturas desde Firestore
+     */
     fun cargarFacturas() {
         db.collection("facturas")
             .get()
             .addOnSuccessListener { result ->
-                val listaFacturas = result.mapNotNull { document ->
-                    document.toObject<Factura>()?.apply {
-                        id = document.id  // Asigna el id generado por Firebase
-                    }
+                val listaFacturas = result.documents.mapNotNull { document ->
+                    document.toObject<Factura>()?.copy(id = document.id) // ✅ Corrección en la asignación de ID
                 }
                 _facturas.value = listaFacturas
             }
             .addOnFailureListener { exception ->
-                // Manejo de errores
-                println("Error al cargar las facturas: ${exception.message}")
+                Log.e("FacturaViewModel", "Error al cargar facturas", exception)
             }
     }
 
+    /**
+     * Agregar una nueva factura a Firestore
+     */
     fun agregarFactura(nuevaFactura: Factura) {
-        val nuevaFacturaId = db.collection("facturas").document().id // Genera un ID único
         db.collection("facturas")
-            .document(nuevaFacturaId)
-            .set(nuevaFactura)  // Usa set en lugar de add
-            .addOnSuccessListener {
-                cargarFacturas() // Recargar la lista después de añadir una nueva factura
-                println("Factura agregada correctamente con ID: $nuevaFacturaId")
+            .add(nuevaFactura) // ✅ Firestore generará el ID automáticamente
+            .addOnSuccessListener { documentReference ->
+                Log.d("FacturaViewModel", "Factura agregada con ID: ${documentReference.id}")
+                cargarFacturas() // Recargar lista después de añadir una nueva factura
             }
             .addOnFailureListener { exception ->
-                println("Error al agregar la factura: ${exception.message}")
+                Log.e("FacturaViewModel", "Error al agregar factura", exception)
             }
     }
 
+    /**
+     * Obtener una factura específica por su ID
+     */
     fun obtenerFacturaPorId(id: String): LiveData<Factura?> {
         val facturaActual = MutableLiveData<Factura?>()
 
@@ -59,22 +61,17 @@ class FacturaViewModel : ViewModel() {
             .get()
             .addOnSuccessListener { document ->
                 if (document.exists()) {
-                    val factura = document.toObject<Factura>()?.apply {
-                        this.id = document.id
-                    }
-                    facturaActual.value = factura
+                    facturaActual.value = document.toObject<Factura>()?.copy(id = document.id)
                 } else {
                     facturaActual.value = null
-                    println("No se encontró la factura con ID: $id")
+                    Log.e("FacturaViewModel", "No se encontró la factura con ID: $id")
                 }
             }
             .addOnFailureListener { exception ->
                 facturaActual.value = null
-                println("Error al obtener la factura: ${exception.message}")
+                Log.e("FacturaViewModel", "Error al obtener la factura", exception)
             }
 
         return facturaActual
     }
-
-
 }
