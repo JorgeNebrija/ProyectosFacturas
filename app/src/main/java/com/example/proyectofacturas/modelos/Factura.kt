@@ -6,6 +6,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Factura(
+    var id: String? = null,  // ✅ Hacerlo nullable para evitar errores
     val numeroFactura: String = "",
     val fecha: String = "",
     val nombre: String = "",
@@ -19,9 +20,8 @@ data class Factura(
     val irpf: Double = 0.0,
     val total: Double = 0.0,
     val tipo: String = ""
-) {
-    constructor() : this("", "", "", "", "", "", "", "", 0.0, 0.0, 0.0, 0.0, "")
-}
+)
+
 sealed class TipoFactura {
     object Compra : TipoFactura()
     object Venta : TipoFactura()

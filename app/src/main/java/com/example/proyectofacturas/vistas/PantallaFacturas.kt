@@ -69,7 +69,7 @@ fun FiltrosFacturas(filtroSeleccionado: String, onFiltroSeleccionado: (String) -
         modifier = Modifier.fillMaxWidth().padding(8.dp).padding(top=16.dp, bottom = 16.dp),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-        listOf("Todas", "Pagadas", "Pendientes").forEach { filtro ->
+        listOf("Todas", "Compras", "Ventas").forEach { filtro ->
             Button(
                 onClick = { onFiltroSeleccionado(filtro) },
                 colors = ButtonDefaults.buttonColors(
