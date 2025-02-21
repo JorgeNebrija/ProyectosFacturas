@@ -179,41 +179,33 @@ fun RegisterField(
 ) {
     Column(
         modifier = Modifier
-            .fillMaxWidth(0.85f)
-            .padding(vertical = 4.dp),
+            .fillMaxWidth(0.85f) // Mismo ancho que el botón de registro
+            .padding(4.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
         Spacer(modifier = Modifier.height(16.dp))
 
-
-        // Campo de entrada
+        // Campo de entrada sin bordes visibles
         OutlinedTextField(
             value = value,
             onValueChange = onValueChange,
             placeholder = { Text(label, color = Color.Gray) },
             keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
             colors = TextFieldDefaults.outlinedTextFieldColors(
-                containerColor = Color(0xFFF5F5F5),
-                unfocusedBorderColor = Color.Transparent,
-                focusedBorderColor = Color.Transparent,
+                containerColor = Color(0xFFF5F5F5), // Fondo gris claro
+                unfocusedBorderColor = Color.Transparent, // Sin borde cuando no está seleccionado
+                focusedBorderColor =  AzulPrincipal,   // Sin borde cuando está seleccionado
                 cursorColor = Color.Black
             ),
             visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
-            trailingIcon = if (isPassword) {
-                {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_visibility),
-                        contentDescription = "Mostrar contraseña",
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
-            } else null,
             shape = RoundedCornerShape(8.dp),
-            singleLine = true
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth() // Asegura que ocupe todo el ancho del contenedor
         )
     }
 }
+
 
 // Función para registrar al usuario y guardar datos en Firestore
 fun registerUser(
