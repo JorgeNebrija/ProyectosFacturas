@@ -180,15 +180,12 @@ fun RegisterField(
     Column(
         modifier = Modifier
             .fillMaxWidth(0.85f)
-            .padding(vertical = 4.dp)
+            .padding(vertical = 4.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top
     ) {
-        // Etiqueta del campo
-        Text(
-            text = label,
-            fontSize = 14.sp,
-            color = Color.Gray,
-            modifier = Modifier.padding(bottom = 4.dp)
-        )
+        Spacer(modifier = Modifier.height(16.dp))
+
 
         // Campo de entrada
         OutlinedTextField(
