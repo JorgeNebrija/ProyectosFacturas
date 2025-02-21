@@ -180,15 +180,13 @@ fun RegisterField(
     Column(
         modifier = Modifier
             .fillMaxWidth(0.85f)
-            .padding(vertical = 4.dp)
-    ) {
+            .padding( 4.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top    ) {
         // Etiqueta del campo
-        Text(
-            text = label,
-            fontSize = 14.sp,
-            color = Color.Gray,
-            modifier = Modifier.padding(bottom = 4.dp)
-        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
 
         // Campo de entrada
         OutlinedTextField(
@@ -197,9 +195,9 @@ fun RegisterField(
             placeholder = { Text(label, color = Color.Gray) },
             keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
             colors = TextFieldDefaults.outlinedTextFieldColors(
-                containerColor = Color(0xFFF5F5F5),
-                unfocusedBorderColor = Color.Transparent,
-                focusedBorderColor = Color.Transparent,
+                containerColor = Color(0xFFF5F5F5), // Fondo gris claro
+                unfocusedBorderColor = Color.Transparent, // Sin borde cuando no está seleccionado
+                focusedBorderColor =  AzulPrincipal,   // Sin borde cuando está seleccionado
                 cursorColor = Color.Black
             ),
             visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
@@ -213,7 +211,8 @@ fun RegisterField(
                 }
             } else null,
             shape = RoundedCornerShape(8.dp),
-            singleLine = true
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }
