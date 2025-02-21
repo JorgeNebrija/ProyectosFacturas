@@ -2,6 +2,7 @@ package com.example.proyectofacturas.vistas
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,9 +24,30 @@ import com.example.proyectofacturas.ui.theme.colorDeFondo
 import com.example.proyectofacturas.viewmodels.FacturaViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+
+
 @Composable
 fun PantallaPerfil(navController: NavHostController, facturaViewModel: FacturaViewModel) {
     var userName by remember { mutableStateOf("Cargando...") }
+
+    @Composable
+    fun mostrarDialogoInformacionPersonal() {
+        var showDialog by remember { mutableStateOf(true) }
+
+        if (showDialog) {
+            AlertDialog(
+                onDismissRequest = { showDialog = false },
+                title = { Text(text = "Información Personal") },
+                text = { Text(text = "Aquí puedes mostrar la información del usuario.") },
+                confirmButton = {
+                    Button(onClick = { showDialog = false }) {
+                        Text("Cerrar")
+                    }
+                }
+            )
+        }
+    }
+
 
     // Recuperar el nombre del usuario desde Firestore
     LaunchedEffect(Unit) {
@@ -108,25 +130,41 @@ fun PantallaPerfil(navController: NavHostController, facturaViewModel: FacturaVi
                 .padding(20.dp)
                 .weight(1f)  // Esto hará que esta columna ocupe el espacio restante
         ) {
-            PerfilOptionItem(icon = R.drawable.ic_informacion, text = "Información Personal")
-            PerfilOptionItem(icon = R.drawable.ic_factura, text = "Facturas")
-            PerfilOptionItem(icon = R.drawable.ic_politica, text = "Política de privacidad")
-            PerfilOptionItem(icon = R.drawable.ic_configuraciones, text = "Configuraciones")
-            PerfilOptionItem(icon = R.drawable.ic_ayuda, text = "Ayuda")
-            PerfilOptionItem(icon = R.drawable.ic_cerrar, text = "Cerrar sesión")
+            // Información Personal (Abre una mini ventana)
+            PerfilOptionItem(icon = R.drawable.ic_informacion, text = "Información Personal") {
+                // Aquí puedes mostrar un diálogo con la información del usuario
+            }
+
+            // Facturas (Navega a otra pantalla)
+            PerfilOptionItem(icon = R.drawable.ic_factura, text = "Facturas") {
+                navController.navigate("facturas")
+            }
+
+
+            // Cerrar sesión (Ejecuta la función de logout)
+            PerfilOptionItem(icon = R.drawable.ic_cerrar, text = "Cerrar sesión") {
+                FirebaseAuth.getInstance().signOut()
+                navController.navigate("pantallaLogin") {
+                    popUpTo("pantallaPerfil") { inclusive = true }
+                }
+            }
         }
     }
+
 }
 
+
+
 @Composable
-fun PerfilOptionItem(icon: Int, text: String) {
+fun PerfilOptionItem(icon: Int, text: String, onClick: () -> Unit) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 12.dp)
-            .background(Color.White, shape = RoundedCornerShape(8.dp))  // Fondo blanco con bordes redondeados
-            .padding(horizontal = 16.dp, vertical = 12.dp)  // Ajuste del padding interno
+            .background(Color.White, shape = RoundedCornerShape(8.dp))
+            .clickable { onClick() } // Llama a la función pasada al hacer clic
+            .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
         Icon(
             painter = painterResource(id = icon),
@@ -152,3 +190,4 @@ fun PerfilOptionItem(icon: Int, text: String) {
         )
     }
 }
+
