@@ -14,6 +14,7 @@ data class Factura(
     val cliente: String = "",
     val direccionCliente: String = "",
     val cif: String = "",
+
     val cifCliente: String = "",
     val baseImponible: Double = 0.0,
     val iva: Double = 0.0,

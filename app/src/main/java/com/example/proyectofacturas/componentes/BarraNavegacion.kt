@@ -2,6 +2,7 @@ package com.example.proyectofacturas.componentes
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Icon
@@ -22,8 +23,10 @@ fun BottomNavigationBar(navController: NavController) {
     val currentRoute = navBackStackEntry.value?.destination?.route
 
     Surface(
+
         color = Color.White,
         modifier = Modifier.fillMaxWidth()
+        .height(56.dp)
     ) {
         BottomAppBar(
             containerColor = Color.White,

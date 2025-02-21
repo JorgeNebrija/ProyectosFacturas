@@ -86,7 +86,7 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
                     Button(
                         onClick = { tipoFactura = "Compra" },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = if (tipoFactura == "Compra") AzulPrincipal else Color.Gray
+                            containerColor = if (tipoFactura == "Compra") AzulPrincipal else Color.LightGray
                         )
                     ) {
                         Text("Compra", color = Color.White)
@@ -95,7 +95,7 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
                     Button(
                         onClick = { tipoFactura = "Venta" },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = if (tipoFactura == "Venta") AzulPrincipal else Color.Gray
+                            containerColor = if (tipoFactura == "Venta") AzulPrincipal else Color.LightGray
                         )
                     ) {
                         Text("Venta", color = Color.White)
