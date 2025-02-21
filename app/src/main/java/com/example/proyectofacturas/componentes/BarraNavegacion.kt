@@ -23,10 +23,9 @@ fun BottomNavigationBar(navController: NavController) {
     val currentRoute = navBackStackEntry.value?.destination?.route
 
     Surface(
-
         color = Color.White,
         modifier = Modifier.fillMaxWidth()
-        .height(56.dp)
+            .height(56.dp)
     ) {
         BottomAppBar(
             containerColor = Color.White,
