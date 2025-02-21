@@ -93,11 +93,10 @@ fun PantallaLogin(navHostController: NavHostController) {
         Icon(
             painter = painterResource(id = R.drawable.freelance_logo),
             contentDescription = "Logo",
-            modifier = Modifier.size(64.dp),
+            modifier = Modifier.size(200.dp),
             tint = AzulPrincipal
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
 
         // Título
         Text(
