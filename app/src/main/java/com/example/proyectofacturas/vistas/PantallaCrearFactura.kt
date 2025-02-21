@@ -113,12 +113,21 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
                     item { InputDeDatos(value = nombre, onValueChange = { nombre = it }, label = "Proveedor:") }
                     item { InputDeDatos(value = cifEmisor, onValueChange = { cifEmisor = it }, label = "CIF/NIF del Proveedor") }
                     item { InputDeDatos(value = direccionEmisor, onValueChange = { direccionEmisor = it }, label = "Dirección del Proveedor") }
+                    item { Text("Datos del Cliente:", style = MaterialTheme.typography.titleSmall) }
+                    item { InputDeDatos(value = cliente, onValueChange = { cliente = it }, label = "Cliente:") }
+                    item { InputDeDatos(value = cifCliente, onValueChange = { cifCliente = it }, label = "CIF/NIF del Cliente") }
+                    item { InputDeDatos(value = direccionCliente, onValueChange = { direccionCliente = it }, label = "Dirección del Cliente") }
                 }
                 "Venta" -> {
                     item { Text("Datos del Cliente:", style = MaterialTheme.typography.titleSmall) }
                     item { InputDeDatos(value = cliente, onValueChange = { cliente = it }, label = "Cliente:") }
                     item { InputDeDatos(value = cifCliente, onValueChange = { cifCliente = it }, label = "CIF/NIF del Cliente") }
                     item { InputDeDatos(value = direccionCliente, onValueChange = { direccionCliente = it }, label = "Dirección del Cliente") }
+                    item { Text("Datos del Proveedor:", style = MaterialTheme.typography.titleSmall) }
+                    item { InputDeDatos(value = nombre, onValueChange = { nombre = it }, label = "Proveedor:") }
+                    item { InputDeDatos(value = cifEmisor, onValueChange = { cifEmisor = it }, label = "CIF/NIF del Proveedor") }
+                    item { InputDeDatos(value = direccionEmisor, onValueChange = { direccionEmisor = it }, label = "Dirección del Proveedor") }
+
                 }
             }
 

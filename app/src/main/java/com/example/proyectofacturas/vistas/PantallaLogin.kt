@@ -128,7 +128,7 @@ fun PantallaLogin(navHostController: NavHostController) {
             placeholder = { Text("yourname@gmail.com", color = Color.Gray) },
             modifier = Modifier
                 .fillMaxWidth(0.85f)
-                .height(56.dp),
+                .height(65.dp),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 containerColor = Color(0xFFF5F5F5),
                 unfocusedBorderColor = Color.Transparent,
@@ -149,7 +149,7 @@ fun PantallaLogin(navHostController: NavHostController) {
             visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier
                 .fillMaxWidth(0.85f)
-                .height(56.dp),
+                .height(65.dp),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 containerColor = Color(0xFFF5F5F5),
                 unfocusedBorderColor = Color.Transparent,

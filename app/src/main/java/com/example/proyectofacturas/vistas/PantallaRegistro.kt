@@ -243,7 +243,7 @@ fun registerUser(
                                 navHostController.navigate("PantallaLogin") // Navega al login
                             }
                             .addOnFailureListener { e ->
-                                message.value = "Error al guardar datos: ${e.message}"
+                                message.value = "Error al guardar datos: ${e.message} "
                             }
                     }
                 } else {
