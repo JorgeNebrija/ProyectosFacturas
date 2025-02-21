@@ -20,6 +20,8 @@ import androidx.navigation.NavHostController
 import com.example.proyectofacturas.R
 import com.example.proyectofacturas.componentes.BottomNavigationBar
 import com.example.proyectofacturas.componentes.Header
+import com.example.proyectofacturas.ui.theme.AzulPrincipal
+import com.example.proyectofacturas.ui.theme.Blanco
 import com.example.proyectofacturas.ui.theme.colorDeFondo
 import com.example.proyectofacturas.viewmodels.FacturaViewModel
 import com.google.firebase.auth.FirebaseAuth
@@ -29,23 +31,38 @@ import com.google.firebase.firestore.FirebaseFirestore
 @Composable
 fun PantallaPerfil(navController: NavHostController, facturaViewModel: FacturaViewModel) {
     var userName by remember { mutableStateOf("Cargando...") }
+    var correo by remember { mutableStateOf("Cargando...") }
+    var lastName by remember { mutableStateOf("Cargando...") }
+    var telefono by remember { mutableStateOf("Cargando...") }
+    var foto by remember { mutableStateOf("Cargando...") }
+    var error by remember { mutableStateOf("Cargando...") }
+    var showDialog by remember { mutableStateOf(false) }
 
-    @Composable
-    fun mostrarDialogoInformacionPersonal() {
-        var showDialog by remember { mutableStateOf(true) }
 
-        if (showDialog) {
-            AlertDialog(
-                onDismissRequest = { showDialog = false },
-                title = { Text(text = "Información Personal") },
-                text = { Text(text = "Aquí puedes mostrar la información del usuario.") },
-                confirmButton = {
-                    Button(onClick = { showDialog = false }) {
-                        Text("Cerrar")
-                    }
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text(text = "Información Personal", color = Color.Black) },
+            text = {
+                Column {
+                    Text(text = "Nombre: $userName - $lastName", color = Color.Black)
+                    Text(text = "Correo: $correo", color = Color.Black)
+                    Text(text = "Teléfono: $telefono", color = Color.Black)
                 }
-            )
-        }
+
+            },
+            confirmButton = {
+                Button(onClick = { showDialog = false }, colors = ButtonDefaults.buttonColors(
+                    containerColor = AzulPrincipal, // Color personalizado para el botón
+                    contentColor = Color.White // Color del texto del botón
+                )) {
+                    Text("Cerrar")
+                }
+            },
+                    containerColor = Blanco
+        )
+    } else {
+
     }
 
 
@@ -56,10 +73,14 @@ fun PantallaPerfil(navController: NavHostController, facturaViewModel: FacturaVi
             FirebaseFirestore.getInstance().collection("users").document(uid)
                 .get()
                 .addOnSuccessListener { document ->
-                    userName = document.getString("name") ?: "Usuario Desconocido"
+                    userName = document.getString("name") ?: "Desconocido"
+                    correo = document.getString("email") ?: "Desconocido"
+                    lastName = document.getString("lastName") ?: "Desconocido"
+                    telefono = document.getString("phone") ?: "Desconocido"
+                    foto = document.getString("foto") ?: "Desconocido"
                 }
                 .addOnFailureListener {
-                    userName = "Error al cargar nombre"
+                    error = "Error al cargar nombre"
                 }
         }
     }
@@ -130,9 +151,9 @@ fun PantallaPerfil(navController: NavHostController, facturaViewModel: FacturaVi
                 .padding(20.dp)
                 .weight(1f)  // Esto hará que esta columna ocupe el espacio restante
         ) {
-            // Información Personal (Abre una mini ventana)
+            // Información Personal (Abre un diálogo)
             PerfilOptionItem(icon = R.drawable.ic_informacion, text = "Información Personal") {
-                // Aquí puedes mostrar un diálogo con la información del usuario
+                showDialog = true;
             }
 
             // Facturas (Navega a otra pantalla)
@@ -140,6 +161,15 @@ fun PantallaPerfil(navController: NavHostController, facturaViewModel: FacturaVi
                 navController.navigate("facturas")
             }
 
+            // Política de privacidad (Navega a otra pantalla)
+            PerfilOptionItem(icon = R.drawable.ic_politica, text = "Política de privacidad") {
+                navController.navigate("politica")
+            }
+
+            // Configuraciones (Navega a otra pantalla)
+            PerfilOptionItem(icon = R.drawable.ic_configuraciones, text = "Configuraciones") {
+                navController.navigate("configuraciones")
+            }
 
             // Cerrar sesión (Ejecuta la función de logout)
             PerfilOptionItem(icon = R.drawable.ic_cerrar, text = "Cerrar sesión") {
@@ -152,7 +182,6 @@ fun PantallaPerfil(navController: NavHostController, facturaViewModel: FacturaVi
     }
 
 }
-
 
 
 @Composable

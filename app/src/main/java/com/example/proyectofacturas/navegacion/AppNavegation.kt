@@ -43,7 +43,6 @@ fun NavigationWrapper() {
             PantallaPerfil(navController, facturaViewModel) // Pasar el ViewModel
         }
 
-
     }
 }
 
