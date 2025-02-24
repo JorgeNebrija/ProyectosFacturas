@@ -1,13 +1,12 @@
 package com.example.proyectofacturas.vistas
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -35,22 +34,33 @@ import java.util.Locale
 @Composable
 fun PantallaFacturas(navController: NavController, viewModel: FacturaViewModel) {
     val facturas by viewModel.facturas.observeAsState(emptyList())
-    var filtroSeleccionado by remember { mutableStateOf("Todas") }
+    var filtroSeleccionado by remember { mutableStateOf("Todas") } // Estado para el filtro
 
     Scaffold(
         topBar = { Header(navController) },
         bottomBar = { BottomNavigationBar(navController = navController) }
     ) { padding ->
-        Column(modifier = Modifier.padding(padding).fillMaxSize().background(colorDeFondo)) {
+        Column(
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize()
+                .background(colorDeFondo)
+        ) {
             // Barra de filtros
             FiltrosFacturas(filtroSeleccionado) { filtroSeleccionado = it }
 
-            // Verificar si hay facturas o mostrar vista vacía
+            // Log para depuración
+            Log.d("PantallaFacturas", "Facturas totales (${facturas.size}): ${facturas.joinToString { it.tipo ?: "Sin tipo" }}")
+            Log.d("PantallaFacturas", "Filtro seleccionado: $filtroSeleccionado")
+
+            // Filtrar las facturas según el tipo seleccionado
             val facturasFiltradas = when (filtroSeleccionado) {
-                "Pagadas" -> facturas.filter { it.total > 0 }
-                "Pendientes" -> facturas.filter { it.total == 0.0 }
-                else -> facturas
+                "Compras" -> facturas.filter { it.tipo?.trim()?.lowercase() == "compra" }
+                "Ventas" -> facturas.filter { it.tipo?.trim()?.lowercase() == "venta" }
+                else -> facturas // Mostrar todas
             }
+
+            Log.d("PantallaFacturas", "Facturas filtradas (${facturasFiltradas.size}): ${facturasFiltradas.joinToString { it.tipo ?: "Sin tipo" }}")
 
             if (facturasFiltradas.isEmpty()) {
                 VistaFacturasVacias(navController)
@@ -61,12 +71,14 @@ fun PantallaFacturas(navController: NavController, viewModel: FacturaViewModel) 
     }
 }
 
-
-// Barra de filtros
+// Barra de filtros para elegir "Todas", "Compras" o "Ventas"
 @Composable
 fun FiltrosFacturas(filtroSeleccionado: String, onFiltroSeleccionado: (String) -> Unit) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(8.dp).padding(top=16.dp, bottom = 16.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .padding(top = 16.dp, bottom = 16.dp),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         listOf("Todas", "Compras", "Ventas").forEach { filtro ->
@@ -113,7 +125,6 @@ fun ItemFactura(factura: Factura, navController: NavController) {
         colors = CardDefaults.cardColors(
             containerColor = Blanco
         ),
-
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text("Factura N.º ${factura.numeroFactura}", fontWeight = FontWeight.Bold, fontSize = 18.sp)
@@ -155,7 +166,7 @@ fun VistaFacturasVacias(navController: NavController) {
         Spacer(modifier = Modifier.height(16.dp))
         Button(
             onClick = { navController.navigate("crear_factura") },
-            colors = ButtonDefaults.buttonColors(containerColor = AzulPrincipal) //
+            colors = ButtonDefaults.buttonColors(containerColor = AzulPrincipal)
         ) {
             Text("Crear Factura", color = Color.White)
         }
