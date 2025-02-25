@@ -74,4 +74,19 @@ class FacturaViewModel : ViewModel() {
 
         return facturaActual
     }
+
+    /**
+     * Eliminar una factura por su ID
+     */
+    fun eliminarFactura(id: String) {
+        db.collection("facturas").document(id)
+            .delete()
+            .addOnSuccessListener {
+                Log.d("FacturaViewModel", "Factura eliminada correctamente con ID: $id")
+                cargarFacturas() // ✅ Recargar la lista tras eliminar
+            }
+            .addOnFailureListener { exception ->
+                Log.e("FacturaViewModel", "Error al eliminar la factura con ID: $id", exception)
+            }
+    }
 }

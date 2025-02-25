@@ -1,15 +1,17 @@
 package com.example.proyectofacturas.vistas
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -28,9 +30,8 @@ fun PantallaDetalleFactura(
     idFactura: String,
     facturaViewModel: FacturaViewModel
 ) {
-
-
     val factura by facturaViewModel.obtenerFacturaPorId(idFactura).observeAsState()
+    val context = LocalContext.current
 
     Scaffold(
         topBar = { Header(navController) },
@@ -43,7 +44,7 @@ fun PantallaDetalleFactura(
                 .background(colorDeFondo)
         ) {
             factura?.let {
-                DetalleFactura(it)
+                DetalleFactura(it, navController, facturaViewModel, context)
             } ?: run {
                 Text(
                     text = "Cargando factura...",
@@ -59,7 +60,12 @@ fun PantallaDetalleFactura(
 }
 
 @Composable
-fun DetalleFactura(factura: Factura) {
+fun DetalleFactura(
+    factura: Factura,
+    navController: NavHostController,
+    facturaViewModel: FacturaViewModel,
+    context: android.content.Context
+) {
     Column(modifier = Modifier.padding(16.dp)) {
         SeccionDetalle("Detalles de la Factura N.º: ${factura.numeroFactura}") {
             Text("Fecha de emisión: ${factura.fecha}")
@@ -71,12 +77,10 @@ fun DetalleFactura(factura: Factura) {
             fontSize = 16.sp,
             modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
             color = Color.Black
-
         )
-        Row(
-            modifier = Modifier
 
-                .fillMaxWidth()
+        Row(
+            modifier = Modifier.fillMaxWidth()
         ) {
             Column(
                 modifier = Modifier
@@ -85,10 +89,9 @@ fun DetalleFactura(factura: Factura) {
                     .clip(RoundedCornerShape(8.dp))
                     .background(Color.White)
                     .padding(16.dp)
-
             ) {
                 Text("Datos del Emisor", fontWeight = FontWeight.Bold, color = colorTitulo)
-               Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(8.dp))
                 Text("Empresa: ${factura.nombre}")
                 Text("NIF: ${factura.cif}")
                 Text("Dirección: ${factura.direccion}")
@@ -116,19 +119,45 @@ fun DetalleFactura(factura: Factura) {
             Spacer(modifier = Modifier.height(8.dp))
             Text("Total: ${factura.total}€", fontWeight = FontWeight.Bold)
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Botones de Editar y Eliminar
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            Button(
+                onClick = {
+                    navController.navigate("editar_factura/${factura.id}")
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = AzulPrincipal)
+            ) {
+                Text("Editar", color = Color.White)
+            }
+
+            Button(
+                onClick = {
+                    factura.id?.let { facturaViewModel.eliminarFactura(it) } //pone que el let ya que id coge un null y en firebase es obligatorio
+                    Toast.makeText(context, "Factura eliminada", Toast.LENGTH_SHORT).show()
+                    navController.popBackStack()
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+            ) {
+                Text("Borrar", color = Color.White)
+            }
+        }
     }
 }
 
 @Composable
 fun SeccionDetalle(titulo: String, contenido: @Composable ColumnScope.() -> Unit) {
-
     Text(
         text = titulo,
         fontWeight = FontWeight.Bold,
         fontSize = 16.sp,
         modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
         color = Color.Black
-
     )
     Column(
         modifier = Modifier
@@ -140,5 +169,3 @@ fun SeccionDetalle(titulo: String, contenido: @Composable ColumnScope.() -> Unit
         contenido()
     }
 }
-
-
