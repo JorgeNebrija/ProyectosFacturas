@@ -26,7 +26,7 @@ class FacturaViewModel : ViewModel() {
             .get()
             .addOnSuccessListener { result ->
                 val listaFacturas = result.documents.mapNotNull { document ->
-                    document.toObject<Factura>()?.copy(id = document.id) // ✅ Corrección en la asignación de ID
+                    document.toObject<Factura>()?.copy(id = document.id)
                 }
                 _facturas.value = listaFacturas
             }
@@ -40,10 +40,10 @@ class FacturaViewModel : ViewModel() {
      */
     fun agregarFactura(nuevaFactura: Factura) {
         db.collection("facturas")
-            .add(nuevaFactura) // ✅ Firestore generará el ID automáticamente
+            .add(nuevaFactura)
             .addOnSuccessListener { documentReference ->
                 Log.d("FacturaViewModel", "Factura agregada con ID: ${documentReference.id}")
-                cargarFacturas() // Recargar lista después de añadir una nueva factura
+                cargarFacturas()
             }
             .addOnFailureListener { exception ->
                 Log.e("FacturaViewModel", "Error al agregar factura", exception)
@@ -76,6 +76,21 @@ class FacturaViewModel : ViewModel() {
     }
 
     /**
+     * Actualizar una factura existente en Firestore
+     */
+    fun actualizarFactura(id: String, facturaActualizada: Factura) {
+        db.collection("facturas").document(id)
+            .set(facturaActualizada)
+            .addOnSuccessListener {
+                Log.d("FacturaViewModel", "Factura actualizada con ID: $id")
+                cargarFacturas() // Recargar la lista tras actualizar
+            }
+            .addOnFailureListener { exception ->
+                Log.e("FacturaViewModel", "Error al actualizar la factura con ID: $id", exception)
+            }
+    }
+
+    /**
      * Eliminar una factura por su ID
      */
     fun eliminarFactura(id: String) {
@@ -83,7 +98,7 @@ class FacturaViewModel : ViewModel() {
             .delete()
             .addOnSuccessListener {
                 Log.d("FacturaViewModel", "Factura eliminada correctamente con ID: $id")
-                cargarFacturas() // ✅ Recargar la lista tras eliminar
+                cargarFacturas()
             }
             .addOnFailureListener { exception ->
                 Log.e("FacturaViewModel", "Error al eliminar la factura con ID: $id", exception)

@@ -11,6 +11,7 @@ import com.example.proyectofacturas.vistas.PantallaDetalleFactura
 import com.example.proyectofacturas.vistas.PantallaFacturas
 import com.example.proyectofacturas.viewmodels.FacturaViewModel
 import com.example.proyectofacturas.vistas.PantallaAutenticacionBiometrica
+import com.example.proyectofacturas.vistas.PantallaEditarFactura
 import com.example.proyectofacturas.vistas.PantallaLogin
 import com.example.proyectofacturas.vistas.PantallaPerfil
 import com.example.proyectofacturas.vistas.PantallaRegistro
@@ -42,6 +43,11 @@ fun NavigationWrapper() {
         composable("perfil") {
             PantallaPerfil(navController, facturaViewModel) // Pasar el ViewModel
         }
+        composable("editar_factura/{id}") { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id") ?: ""
+            PantallaEditarFactura(navController, id, facturaViewModel)
+        }
+
 
     }
 }

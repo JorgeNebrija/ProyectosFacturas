@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Factura(
-    var id: String? = null,  // ✅ Hacerlo nullable para evitar errores
+    var id: String? = "",  // ✅ Hacerlo nullable para evitar errores
     val numeroFactura: String = "",
     val fecha: String = "",
     val nombre: String = "",
