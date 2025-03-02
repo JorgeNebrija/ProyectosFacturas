@@ -8,14 +8,19 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import com.example.proyectofacturas.modelos.Factura
+import com.example.proyectofacturas.modelos.Proyecto
 
 class FacturaViewModel : ViewModel() {
     private val db = Firebase.firestore
     private val _facturas = MutableLiveData<List<Factura>>()
     val facturas: LiveData<List<Factura>> = _facturas
 
+    private val _proyectos = MutableLiveData<List<Proyecto>>()
+    val proyectos: LiveData<List<Proyecto>> = _proyectos
+
     init {
         cargarFacturas()
+        cargarProyectos()
     }
 
     /**
@@ -104,4 +109,22 @@ class FacturaViewModel : ViewModel() {
                 Log.e("FacturaViewModel", "Error al eliminar la factura con ID: $id", exception)
             }
     }
+
+    fun cargarProyectos() {
+        db.collection("proyectos")
+            .get()
+            .addOnSuccessListener { result ->
+                val listaProyectos = mutableListOf<Proyecto>()
+                for (document in result) {
+                    val nombre = document.getString("nombre") ?: "Sin nombre"
+                    val codigo = document.getString("codigo") ?: "Sin código"
+                    listaProyectos.add(Proyecto(nombre = nombre, codigo = codigo))
+                }
+                _proyectos.value = listaProyectos
+            }
+            .addOnFailureListener { exception ->
+                Log.e("FacturaViewModel", "Error al obtener proyectos", exception)
+            }
+    }
+
 }

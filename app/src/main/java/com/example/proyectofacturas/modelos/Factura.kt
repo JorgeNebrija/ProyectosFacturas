@@ -20,7 +20,9 @@ data class Factura(
     val iva: Double = 0.0,
     val irpf: Double = 0.0,
     val total: Double = 0.0,
-    val tipo: String = ""
+    val tipo: String = "",
+
+    val codigoProyecto: String = ""
 )
 
 sealed class TipoFactura {

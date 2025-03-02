@@ -5,6 +5,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
@@ -64,6 +65,12 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
     var irpf by remember { mutableStateOf("0.0") }
     var total by remember { mutableStateOf("0.0") }
 
+    var proyectoSeleccionadoNombre by remember { mutableStateOf("") }
+    var proyectoSeleccionadoCodigo by remember { mutableStateOf("") }
+    var expanded by remember { mutableStateOf(false) }
+
+    val proyectos by viewModel.proyectos.observeAsState(emptyList())
+
     var tipoFactura by remember { mutableStateOf("Compra") } // Estado de selección
 
     Scaffold(
@@ -102,6 +109,44 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
                     }
                 }
             }
+
+            item {
+                Text("Selecciona un Proyecto:", style = MaterialTheme.typography.titleSmall)
+            }
+
+            item {
+                ExposedDropdownMenuBox(
+                    expanded = expanded,
+                    onExpandedChange = { expanded = !expanded }
+                ) {
+                    OutlinedTextField(
+                        value = proyectoSeleccionadoNombre,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Proyecto") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .menuAnchor()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        proyectos.forEach { proyecto ->
+                            DropdownMenuItem(
+                                text = { Text(proyecto.nombre) },
+                                onClick = {
+                                    proyectoSeleccionadoNombre = proyecto.nombre
+                                    proyectoSeleccionadoCodigo = proyecto.codigo
+                                    expanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+
 
             // Campos comunes
             item { InputDeDatos(value = numeroFactura, onValueChange = { numeroFactura = it }, label = "Número de Factura") }
@@ -175,6 +220,7 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
                 )
             }
 
+
             // Botón de guardar
             item {
                 Button(
@@ -192,7 +238,8 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
                             iva = iva.toDoubleOrNull() ?: 0.0,
                             irpf = irpf.toDoubleOrNull() ?: 0.0,
                             total = total.toDoubleOrNull() ?: 0.0,
-                            tipo = tipoFactura
+                            tipo = tipoFactura,
+                            codigoProyecto = proyectoSeleccionadoCodigo
                         )
                         viewModel.agregarFactura(nuevaFactura)
                         navController.popBackStack()
