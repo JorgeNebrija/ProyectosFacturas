@@ -48,12 +48,16 @@ fun InputDeDatos(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewModel) {
-    var numeroFactura by remember { mutableStateOf("") }
+
+    var numeroFactura by remember { mutableStateOf(generarNumeroFactura()) }
     var fecha by remember {
         mutableStateOf(
             SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(Date())
         )
     }
+
+
+
     var nombre by remember { mutableStateOf("") }
     var cliente by remember { mutableStateOf("") }
     var direccionEmisor by remember { mutableStateOf("") }
@@ -149,7 +153,7 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
 
 
             // Campos comunes
-            item { InputDeDatos(value = numeroFactura, onValueChange = { numeroFactura = it }, label = "Número de Factura") }
+            item { InputDeDatos(value = numeroFactura, onValueChange = { numeroFactura = it }, label = "Número de Factura", enabled = false) }
             item { InputDeDatos(value = fecha, onValueChange = { fecha = it }, label = "Fecha de Emisión", enabled = false) }
 
             when (tipoFactura) {
@@ -264,5 +268,15 @@ fun calcularTotal(base: String, iva: String, irpf: String): String {
     val irpfCalculado = baseImponible * (irpfPorcentaje / 100)
 
     return String.format("%.2f", baseImponible + ivaCalculado - irpfCalculado)
+}
+
+fun generarNumeroFactura(): String {
+    val letras = (1..3)
+        .map { ('A'..'Z').random() }
+        .joinToString("")
+
+    val numeros = (100..999).random()
+
+    return "$letras/$numeros"
 }
 
