@@ -20,6 +20,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavHostController
 import com.example.proyectofacturas.R
@@ -128,7 +129,7 @@ fun PantallaLogin(navHostController: NavHostController) {
             placeholder = { Text("yourname@gmail.com", color = Color.Gray) },
             modifier = Modifier
                 .fillMaxWidth(0.85f)
-                .height(56.dp),
+                .height(65.dp),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 containerColor = Color(0xFFF5F5F5),
                 unfocusedBorderColor = Color.Transparent,
@@ -141,15 +142,29 @@ fun PantallaLogin(navHostController: NavHostController) {
         Spacer(modifier = Modifier.height(8.dp))
 
         // Campo de contraseña
+        // Campo de contraseña con botón de visibilidad
+        val passwordVisible = remember { mutableStateOf(false) }
+
         OutlinedTextField(
             value = password.value,
             onValueChange = { password.value = it },
             label = { Text("Contraseña", color = Color.Gray) },
             placeholder = { Text("******", color = Color.Gray) },
-            visualTransformation = PasswordVisualTransformation(),
+            visualTransformation = if (passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
+            trailingIcon = {
+                IconButton(onClick = { passwordVisible.value = !passwordVisible.value }) {
+                    Icon(
+                        painter = painterResource(
+                            id = if (passwordVisible.value) R.drawable.ic_visibility_off else R.drawable.ic_visibility
+                        ),
+                        contentDescription = if (passwordVisible.value) "Ocultar contraseña" else "Mostrar contraseña",
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+            },
             modifier = Modifier
                 .fillMaxWidth(0.85f)
-                .height(56.dp),
+                .height(65.dp),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 containerColor = Color(0xFFF5F5F5),
                 unfocusedBorderColor = Color.Transparent,
@@ -158,6 +173,7 @@ fun PantallaLogin(navHostController: NavHostController) {
             ),
             singleLine = true
         )
+
 
         Spacer(modifier = Modifier.height(8.dp))
 

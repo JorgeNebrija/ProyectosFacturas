@@ -2,6 +2,7 @@ package com.example.proyectofacturas.vistas
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,13 +20,51 @@ import androidx.navigation.NavHostController
 import com.example.proyectofacturas.R
 import com.example.proyectofacturas.componentes.BottomNavigationBar
 import com.example.proyectofacturas.componentes.Header
+import com.example.proyectofacturas.ui.theme.AzulPrincipal
+import com.example.proyectofacturas.ui.theme.Blanco
 import com.example.proyectofacturas.ui.theme.colorDeFondo
 import com.example.proyectofacturas.viewmodels.FacturaViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+
+
 @Composable
 fun PantallaPerfil(navController: NavHostController, facturaViewModel: FacturaViewModel) {
     var userName by remember { mutableStateOf("Cargando...") }
+    var correo by remember { mutableStateOf("Cargando...") }
+    var lastName by remember { mutableStateOf("Cargando...") }
+    var telefono by remember { mutableStateOf("Cargando...") }
+    var foto by remember { mutableStateOf("Cargando...") }
+    var error by remember { mutableStateOf("Cargando...") }
+    var showDialog by remember { mutableStateOf(false) }
+
+
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text(text = "Información Personal", color = Color.Black) },
+            text = {
+                Column {
+                    Text(text = "Nombre: $userName - $lastName", color = Color.Black)
+                    Text(text = "Correo: $correo", color = Color.Black)
+                    Text(text = "Teléfono: $telefono", color = Color.Black)
+                }
+
+            },
+            confirmButton = {
+                Button(onClick = { showDialog = false }, colors = ButtonDefaults.buttonColors(
+                    containerColor = AzulPrincipal, // Color personalizado para el botón
+                    contentColor = Color.White // Color del texto del botón
+                )) {
+                    Text("Cerrar")
+                }
+            },
+                    containerColor = Blanco
+        )
+    } else {
+
+    }
+
 
     // Recuperar el nombre del usuario desde Firestore
     LaunchedEffect(Unit) {
@@ -34,10 +73,14 @@ fun PantallaPerfil(navController: NavHostController, facturaViewModel: FacturaVi
             FirebaseFirestore.getInstance().collection("users").document(uid)
                 .get()
                 .addOnSuccessListener { document ->
-                    userName = document.getString("name") ?: "Usuario Desconocido"
+                    userName = document.getString("name") ?: "Desconocido"
+                    correo = document.getString("email") ?: "Desconocido"
+                    lastName = document.getString("lastName") ?: "Desconocido"
+                    telefono = document.getString("phone") ?: "Desconocido"
+                    foto = document.getString("foto") ?: "Desconocido"
                 }
                 .addOnFailureListener {
-                    userName = "Error al cargar nombre"
+                    error = "Error al cargar nombre"
                 }
         }
     }
@@ -108,25 +151,49 @@ fun PantallaPerfil(navController: NavHostController, facturaViewModel: FacturaVi
                 .padding(20.dp)
                 .weight(1f)  // Esto hará que esta columna ocupe el espacio restante
         ) {
-            PerfilOptionItem(icon = R.drawable.ic_informacion, text = "Información Personal")
-            PerfilOptionItem(icon = R.drawable.ic_factura, text = "Facturas")
-            PerfilOptionItem(icon = R.drawable.ic_politica, text = "Política de privacidad")
-            PerfilOptionItem(icon = R.drawable.ic_configuraciones, text = "Configuraciones")
-            PerfilOptionItem(icon = R.drawable.ic_ayuda, text = "Ayuda")
-            PerfilOptionItem(icon = R.drawable.ic_cerrar, text = "Cerrar sesión")
+            // Información Personal (Abre un diálogo)
+            PerfilOptionItem(icon = R.drawable.ic_informacion, text = "Información Personal") {
+                showDialog = true;
+            }
+
+            // Facturas (Navega a otra pantalla)
+            PerfilOptionItem(icon = R.drawable.ic_factura, text = "Facturas") {
+                navController.navigate("facturas")
+            }
+
+            // Política de privacidad (Navega a otra pantalla)
+            PerfilOptionItem(icon = R.drawable.ic_politica, text = "Política de privacidad") {
+                navController.navigate("politica")
+            }
+
+            // Configuraciones (Navega a otra pantalla)
+            PerfilOptionItem(icon = R.drawable.ic_configuraciones, text = "Configuraciones") {
+                navController.navigate("configuraciones")
+            }
+
+            // Cerrar sesión (Ejecuta la función de logout)
+            PerfilOptionItem(icon = R.drawable.ic_cerrar, text = "Cerrar sesión") {
+                FirebaseAuth.getInstance().signOut()
+                navController.navigate("pantallaLogin") {
+                    popUpTo("pantallaPerfil") { inclusive = true }
+                }
+            }
         }
     }
+
 }
 
+
 @Composable
-fun PerfilOptionItem(icon: Int, text: String) {
+fun PerfilOptionItem(icon: Int, text: String, onClick: () -> Unit) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 12.dp)
-            .background(Color.White, shape = RoundedCornerShape(8.dp))  // Fondo blanco con bordes redondeados
-            .padding(horizontal = 16.dp, vertical = 12.dp)  // Ajuste del padding interno
+            .background(Color.White, shape = RoundedCornerShape(8.dp))
+            .clickable { onClick() } // Llama a la función pasada al hacer clic
+            .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
         Icon(
             painter = painterResource(id = icon),
@@ -152,3 +219,4 @@ fun PerfilOptionItem(icon: Int, text: String) {
         )
     }
 }
+

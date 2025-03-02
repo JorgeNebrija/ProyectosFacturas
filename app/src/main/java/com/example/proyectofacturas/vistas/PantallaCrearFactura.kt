@@ -5,6 +5,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
@@ -64,6 +65,12 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
     var irpf by remember { mutableStateOf("0.0") }
     var total by remember { mutableStateOf("0.0") }
 
+    var proyectoSeleccionadoNombre by remember { mutableStateOf("") }
+    var proyectoSeleccionadoCodigo by remember { mutableStateOf("") }
+    var expanded by remember { mutableStateOf(false) }
+
+    val proyectos by viewModel.proyectos.observeAsState(emptyList())
+
     var tipoFactura by remember { mutableStateOf("Compra") } // Estado de selección
 
     Scaffold(
@@ -86,7 +93,7 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
                     Button(
                         onClick = { tipoFactura = "Compra" },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = if (tipoFactura == "Compra") AzulPrincipal else Color.Gray
+                            containerColor = if (tipoFactura == "Compra") AzulPrincipal else Color.LightGray
                         )
                     ) {
                         Text("Compra", color = Color.White)
@@ -95,13 +102,51 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
                     Button(
                         onClick = { tipoFactura = "Venta" },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = if (tipoFactura == "Venta") AzulPrincipal else Color.Gray
+                            containerColor = if (tipoFactura == "Venta") AzulPrincipal else Color.LightGray
                         )
                     ) {
                         Text("Venta", color = Color.White)
                     }
                 }
             }
+
+            item {
+                Text("Selecciona un Proyecto:", style = MaterialTheme.typography.titleSmall)
+            }
+
+            item {
+                ExposedDropdownMenuBox(
+                    expanded = expanded,
+                    onExpandedChange = { expanded = !expanded }
+                ) {
+                    OutlinedTextField(
+                        value = proyectoSeleccionadoNombre,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Proyecto") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .menuAnchor()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        proyectos.forEach { proyecto ->
+                            DropdownMenuItem(
+                                text = { Text(proyecto.nombre) },
+                                onClick = {
+                                    proyectoSeleccionadoNombre = proyecto.nombre
+                                    proyectoSeleccionadoCodigo = proyecto.codigo
+                                    expanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+
 
             // Campos comunes
             item { InputDeDatos(value = numeroFactura, onValueChange = { numeroFactura = it }, label = "Número de Factura") }
@@ -113,12 +158,21 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
                     item { InputDeDatos(value = nombre, onValueChange = { nombre = it }, label = "Proveedor:") }
                     item { InputDeDatos(value = cifEmisor, onValueChange = { cifEmisor = it }, label = "CIF/NIF del Proveedor") }
                     item { InputDeDatos(value = direccionEmisor, onValueChange = { direccionEmisor = it }, label = "Dirección del Proveedor") }
+                    item { Text("Datos del Cliente:", style = MaterialTheme.typography.titleSmall) }
+                    item { InputDeDatos(value = cliente, onValueChange = { cliente = it }, label = "Cliente:") }
+                    item { InputDeDatos(value = cifCliente, onValueChange = { cifCliente = it }, label = "CIF/NIF del Cliente") }
+                    item { InputDeDatos(value = direccionCliente, onValueChange = { direccionCliente = it }, label = "Dirección del Cliente") }
                 }
                 "Venta" -> {
                     item { Text("Datos del Cliente:", style = MaterialTheme.typography.titleSmall) }
                     item { InputDeDatos(value = cliente, onValueChange = { cliente = it }, label = "Cliente:") }
                     item { InputDeDatos(value = cifCliente, onValueChange = { cifCliente = it }, label = "CIF/NIF del Cliente") }
                     item { InputDeDatos(value = direccionCliente, onValueChange = { direccionCliente = it }, label = "Dirección del Cliente") }
+                    item { Text("Datos del Proveedor:", style = MaterialTheme.typography.titleSmall) }
+                    item { InputDeDatos(value = nombre, onValueChange = { nombre = it }, label = "Proveedor:") }
+                    item { InputDeDatos(value = cifEmisor, onValueChange = { cifEmisor = it }, label = "CIF/NIF del Proveedor") }
+                    item { InputDeDatos(value = direccionEmisor, onValueChange = { direccionEmisor = it }, label = "Dirección del Proveedor") }
+
                 }
             }
 
@@ -166,6 +220,7 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
                 )
             }
 
+
             // Botón de guardar
             item {
                 Button(
@@ -183,7 +238,8 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
                             iva = iva.toDoubleOrNull() ?: 0.0,
                             irpf = irpf.toDoubleOrNull() ?: 0.0,
                             total = total.toDoubleOrNull() ?: 0.0,
-                            tipo = tipoFactura
+                            tipo = tipoFactura,
+                            codigoProyecto = proyectoSeleccionadoCodigo
                         )
                         viewModel.agregarFactura(nuevaFactura)
                         navController.popBackStack()
