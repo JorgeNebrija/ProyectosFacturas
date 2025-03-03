@@ -43,6 +43,7 @@ fun PantallaLogin(navHostController: NavHostController) {
     val email = remember { mutableStateOf("") }
     val password = remember { mutableStateOf("") }
     val rememberMe = remember { mutableStateOf(false) }
+    val messageColor = remember { mutableStateOf(Color.Transparent) } // Estado para color dinámico del mensaje
 
 
 
@@ -176,6 +177,21 @@ fun PantallaLogin(navHostController: NavHostController) {
             singleLine = true
         )
 
+        Spacer(modifier = Modifier.height(14.dp))
+
+        if (message.value.isNotEmpty()) {
+            Text(
+                text = message.value,
+                color = messageColor.value, // Aplica el color dinámico
+                fontSize = 14.sp,
+                modifier = Modifier
+                    .padding(8.dp)
+                    .fillMaxWidth(0.85f),
+                textAlign = TextAlign.Center
+            )
+        }
+
+
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -189,7 +205,7 @@ fun PantallaLogin(navHostController: NavHostController) {
         // Botón de iniciar sesión
         Button(
             onClick = {
-                loginUser(auth, email.value, password.value, navHostController, message, context)
+                loginUser(auth, email.value, password.value, navHostController, message, messageColor, context)
             },
             modifier = Modifier
                 .fillMaxWidth(0.85f)
@@ -268,27 +284,45 @@ fun handlePostLogin(navHostController: NavHostController, context: Context) {
 
 
 
-// Función para iniciar sesión con email y contraseña
 fun loginUser(
     auth: FirebaseAuth,
     email: String,
     password: String,
     navHostController: NavHostController,
     message: MutableState<String>,
+    messageColor: MutableState<Color>,
     context: Context
 ) {
-    if (email.isNotBlank() && password.isNotBlank()) {
-        auth.signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                message.value = "Inicio de sesión exitoso"
-                handlePostLogin(navHostController, context)
-            } else {
-                message.value = "Error: ${task.exception?.message}"
-            }
+    val errorMessages = mutableListOf<String>()
 
+    // Validaciones
+    if (email.isBlank()) {
+        errorMessages.add("El correo es obligatorio")
+    } else if (email.length < 6 || email.length > 30) {
+        errorMessages.add("El correo debe tener entre 6 y 30 caracteres")
+    }
+
+    if (password.isBlank()) {
+        errorMessages.add("La contraseña es obligatoria")
+    } else if (password.length < 6 || password.length > 15) {
+        errorMessages.add("La contraseña debe tener entre 6 y 15 caracteres")
+    }
+
+    if (errorMessages.isNotEmpty()) {
+        message.value = errorMessages.joinToString("\n") // Une los errores con salto de línea
+        messageColor.value = Color.Red // Color rojo para errores
+        return
+    }
+
+    // Intentar inicio de sesión con Firebase
+    auth.signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
+        if (task.isSuccessful) {
+            message.value = "Inicio de sesión exitoso"
+            messageColor.value = AzulPrincipal // Color azul para éxito
+            handlePostLogin(navHostController, context)
+        } else {
+            message.value = " Inicio de sesión erróneo. Verifica tus datos e inténtalo de nuevo."
+            messageColor.value = Color.Red
         }
-    } else {
-        message.value = "Por favor completa todos los campos"
     }
 }
-
