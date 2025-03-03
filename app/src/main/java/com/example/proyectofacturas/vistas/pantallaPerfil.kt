@@ -27,7 +27,6 @@ import com.example.proyectofacturas.viewmodels.FacturaViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
-
 @Composable
 fun PantallaPerfil(navController: NavHostController, facturaViewModel: FacturaViewModel) {
     var userName by remember { mutableStateOf("Cargando...") }
@@ -36,9 +35,11 @@ fun PantallaPerfil(navController: NavHostController, facturaViewModel: FacturaVi
     var telefono by remember { mutableStateOf("Cargando...") }
     var foto by remember { mutableStateOf("Cargando...") }
     var error by remember { mutableStateOf("Cargando...") }
+
     var showDialog by remember { mutableStateOf(false) }
+    var showLogoutDialog by remember { mutableStateOf(false) } // Estado para la alerta de cerrar sesión
 
-
+    // Diálogo de información personal
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { showDialog = false },
@@ -49,24 +50,55 @@ fun PantallaPerfil(navController: NavHostController, facturaViewModel: FacturaVi
                     Text(text = "Correo: $correo", color = Color.Black)
                     Text(text = "Teléfono: $telefono", color = Color.Black)
                 }
-
             },
             confirmButton = {
-                Button(onClick = { showDialog = false }, colors = ButtonDefaults.buttonColors(
-                    containerColor = AzulPrincipal, // Color personalizado para el botón
-                    contentColor = Color.White // Color del texto del botón
-                )) {
+                Button(
+                    onClick = { showDialog = false },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = AzulPrincipal,
+                        contentColor = Color.White
+                    )
+                ) {
                     Text("Cerrar")
                 }
             },
-                    containerColor = Blanco
+            containerColor = Blanco
         )
-    } else {
-
     }
 
+    // Diálogo de confirmación de cierre de sesión
+    if (showLogoutDialog) {
+        AlertDialog(
+            onDismissRequest = { showLogoutDialog = false },
+            title = { Text(text = "Cerrar Sesión", color = Color.Black) },
+            text = { Text("¿Estás seguro de que quieres cerrar sesión?", color = Color.Black) },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        FirebaseAuth.getInstance().signOut()
+                        navController.navigate("pantallaLogin") {
+                            popUpTo("pantallaPerfil") { inclusive = true }
+                        }
+                        showLogoutDialog = false
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = AzulPrincipal)
+                ) {
+                    Text("Cerrar sesión")
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = { showLogoutDialog = false },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
+                ) {
+                    Text("Cancelar")
+                }
+            },
+            containerColor = Blanco
+        )
+    }
 
-    // Recuperar el nombre del usuario desde Firestore
+    // Recuperar datos del usuario desde Firestore
     LaunchedEffect(Unit) {
         val currentUser = FirebaseAuth.getInstance().currentUser
         currentUser?.uid?.let { uid ->
@@ -106,7 +138,6 @@ fun PantallaPerfil(navController: NavHostController, facturaViewModel: FacturaVi
             }
         }
 
-        // Foto de perfil y nombre
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxWidth()
@@ -136,7 +167,7 @@ fun PantallaPerfil(navController: NavHostController, facturaViewModel: FacturaVi
             }
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = userName,  // Aquí se muestra el nombre del usuario
+                text = userName,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
@@ -145,42 +176,33 @@ fun PantallaPerfil(navController: NavHostController, facturaViewModel: FacturaVi
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Opciones de perfil
         Column(
             modifier = Modifier
                 .padding(20.dp)
-                .weight(1f)  // Esto hará que esta columna ocupe el espacio restante
+                .weight(1f)
         ) {
-            // Información Personal (Abre un diálogo)
             PerfilOptionItem(icon = R.drawable.ic_informacion, text = "Información Personal") {
-                showDialog = true;
+                showDialog = true
             }
 
-            // Facturas (Navega a otra pantalla)
             PerfilOptionItem(icon = R.drawable.ic_factura, text = "Facturas") {
                 navController.navigate("facturas")
             }
 
-            // Política de privacidad (Navega a otra pantalla)
             PerfilOptionItem(icon = R.drawable.ic_politica, text = "Política de privacidad") {
                 navController.navigate("politica")
             }
 
-            // Configuraciones (Navega a otra pantalla)
             PerfilOptionItem(icon = R.drawable.ic_configuraciones, text = "Configuraciones") {
                 navController.navigate("configuraciones")
             }
 
-            // Cerrar sesión (Ejecuta la función de logout)
+            // Opción de cerrar sesión con diálogo de confirmación
             PerfilOptionItem(icon = R.drawable.ic_cerrar, text = "Cerrar sesión") {
-                FirebaseAuth.getInstance().signOut()
-                navController.navigate("pantallaLogin") {
-                    popUpTo("pantallaPerfil") { inclusive = true }
-                }
+                showLogoutDialog = true
             }
         }
     }
-
 }
 
 
