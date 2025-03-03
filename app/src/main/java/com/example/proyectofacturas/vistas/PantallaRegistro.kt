@@ -1,5 +1,6 @@
 package com.example.proyectofacturas.vistas
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -15,6 +16,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -45,6 +47,9 @@ fun PantallaRegistro(navHostController: NavHostController) {
     val password = remember { mutableStateOf(TextFieldValue("")) }
     val confirmPassword = remember { mutableStateOf(TextFieldValue("")) }
     val message = remember { mutableStateOf("") } // Mensaje de estado para mostrar errores o confirmaciones
+    val messageColor = remember { mutableStateOf(Color.Unspecified) } // Estado para el color del mensaje
+    val context = LocalContext.current // Obtener el contexto actual
+
 
     Column(
         modifier = Modifier
@@ -117,10 +122,12 @@ fun PantallaRegistro(navHostController: NavHostController) {
                         email = email.value.text,
                         password = password.value.text,
                         message = message,
+                        messageColor = messageColor,
                         navHostController = navHostController,
                         name = name.value.text,
                         lastName = lastName.value.text,
-                        phone = phone.value.text
+                        phone = phone.value.text,
+                        context = context
                     )
                 } else {
                     // Si las contraseñas no coinciden, muestra un mensaje de error
@@ -138,14 +145,14 @@ fun PantallaRegistro(navHostController: NavHostController) {
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Mensaje de estado (éxito o error)
         if (message.value.isNotEmpty()) {
             Text(
                 text = message.value,
-                color = if (message.value.startsWith("Error")) Color.Red else Color.Green,
+                color = messageColor.value, // Usar el color correcto del mensaje
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
         }
+
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -221,52 +228,88 @@ fun RegisterField(
 }
 
 
-// Función para registrar al usuario y guardar datos en Firestore
+// Función para registrar al usuario y guardar datos en Firestore con validaciones
 fun registerUser(
     auth: FirebaseAuth,
     email: String,
     password: String,
     message: MutableState<String>,
+    messageColor: MutableState<Color>,
     navHostController: NavHostController,
     name: String,
     lastName: String,
-    phone: String
+    phone: String,
+    context: Context
 ) {
-    if (email.isNotBlank() && password.isNotBlank()) {
-        // Autenticación con FirebaseAuth
-        auth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    // Obtén el ID del usuario
-                    val userId = auth.currentUser?.uid
-                    val db = FirebaseFirestore.getInstance()
+    val errorMessages = mutableListOf<String>()
 
-                    // Datos adicionales del usuario
-                    val userData = mapOf(
-                        "name" to name,
-                        "lastName" to lastName,
-                        "email" to email,
-                        "phone" to phone
-                    )
-
-                    // Guarda los datos en Firestore en la colección "users"
-                    userId?.let {
-                        db.collection("users").document(it).set(userData)
-                            .addOnSuccessListener {
-                                message.value = "Registro exitoso"
-                                navHostController.navigate("PantallaLogin") // Navega al login
-                            }
-                            .addOnFailureListener { e ->
-                                message.value = "Error al guardar datos: ${e.message}"
-                            }
-                    }
-                } else {
-                    // Error en el registro
-                    message.value = "Error: ${task.exception?.message}"
-                }
-            }
-    } else {
-        // Campos vacíos
-        message.value = "Por favor, completa todos los campos"
+    // Validaciones de los campos
+    if (name.isBlank()) {
+        errorMessages.add("El nombre es obligatorio")
+    } else if (name.length < 3 || name.length > 30) {
+        errorMessages.add("El nombre debe tener entre 3 y 30 caracteres")
     }
+
+    if (lastName.isBlank()) {
+        errorMessages.add("El apellido es obligatorio")
+    } else if (lastName.length < 3 || lastName.length > 30) {
+        errorMessages.add("El apellido debe tener entre 3 y 30 caracteres")
+    }
+
+    if (email.isBlank()) {
+        errorMessages.add("El correo es obligatorio")
+    } else if (email.length < 6 || email.length > 30) {
+        errorMessages.add("El correo debe tener entre 6 y 30 caracteres")
+    }
+
+    if (phone.isBlank()) {
+        errorMessages.add("El número de teléfono es obligatorio")
+    } else if (!phone.matches(Regex("^\\+?[0-9]{7,15}$"))) {
+        errorMessages.add("El teléfono debe tener entre 7 y 15 dígitos")
+    }
+
+    if (password.isBlank()) {
+        errorMessages.add("La contraseña es obligatoria")
+    } else if (password.length < 6 || password.length > 15) {
+        errorMessages.add("La contraseña debe tener entre 6 y 15 caracteres")
+    }
+
+    // Si hay errores, mostrar mensaje y salir
+    if (errorMessages.isNotEmpty()) {
+        message.value = errorMessages.joinToString("\n")
+        messageColor.value = Color.Red // Mostrar errores en rojo
+        return
+    }
+
+    // Intentar registrar al usuario con Firebase Authentication
+    auth.createUserWithEmailAndPassword(email, password)
+        .addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val userId = auth.currentUser?.uid
+                val db = FirebaseFirestore.getInstance()
+
+                val userData = mapOf(
+                    "name" to name,
+                    "lastName" to lastName,
+                    "email" to email,
+                    "phone" to phone
+                )
+
+                userId?.let {
+                    db.collection("users").document(it).set(userData)
+                        .addOnSuccessListener {
+                            message.value = "Registro exitoso"
+                            messageColor.value = Color.Blue // Color azul para éxito
+                            navHostController.navigate("pantallaLogin") // Redirige a login
+                        }
+                        .addOnFailureListener { e ->
+                            message.value = "Error al guardar datos: ${e.message}"
+                            messageColor.value = Color.Red
+                        }
+                }
+            } else {
+                message.value = "Error en el registro: ${task.exception?.message}"
+                messageColor.value = Color.Red
+            }
+        }
 }
