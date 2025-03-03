@@ -177,46 +177,49 @@ fun RegisterField(
     keyboardType: KeyboardType = KeyboardType.Text,
     isPassword: Boolean = false
 ) {
+    val passwordVisible = remember { mutableStateOf(false) } // Estado para la visibilidad de la contraseña
+
     Column(
         modifier = Modifier
             .fillMaxWidth(0.85f)
-            .padding( 4.dp),
+            .padding(4.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
         Spacer(modifier = Modifier.height(16.dp))
 
-
-
-        // Campo de entrada
         OutlinedTextField(
             value = value,
             onValueChange = onValueChange,
             placeholder = { Text(label, color = Color.Gray) },
             keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
             colors = TextFieldDefaults.outlinedTextFieldColors(
-                containerColor = Color(0xFFF5F5F5), // Fondo gris claro
-                unfocusedBorderColor = Color.Transparent, // Sin borde cuando no está seleccionado
-                focusedBorderColor =  AzulPrincipal,
+                containerColor = Color(0xFFF5F5F5),
+                unfocusedBorderColor = Color.Transparent,
+                focusedBorderColor = AzulPrincipal,
                 cursorColor = Color.Black
             ),
-            visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
+            visualTransformation = if (isPassword && !passwordVisible.value) PasswordVisualTransformation() else VisualTransformation.None,
             trailingIcon = if (isPassword) {
                 {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_visibility),
-                        contentDescription = "Mostrar contraseña",
-                        modifier = Modifier.size(20.dp)
-                    )
+                    IconButton(onClick = { passwordVisible.value = !passwordVisible.value }) {
+                        Icon(
+                            painter = painterResource(
+                                id = if (passwordVisible.value) R.drawable.ic_visibility_off else R.drawable.ic_visibility
+                            ),
+                            contentDescription = if (passwordVisible.value) "Ocultar contraseña" else "Mostrar contraseña",
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
                 }
             } else null,
             shape = RoundedCornerShape(8.dp),
             singleLine = true,
             modifier = Modifier.fillMaxWidth()
-
         )
     }
 }
+
 
 // Función para registrar al usuario y guardar datos en Firestore
 fun registerUser(

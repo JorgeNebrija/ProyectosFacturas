@@ -5,6 +5,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
@@ -47,12 +48,17 @@ fun InputDeDatos(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewModel) {
-    var numeroFactura by remember { mutableStateOf("") }
+
+    var numeroFactura by remember { mutableStateOf(generarNumeroFactura()) }
     var fecha by remember {
         mutableStateOf(
             SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(Date())
         )
     }
+
+    val proyectos by viewModel.proyectos.observeAsState(emptyList())
+
+
     var nombre by remember { mutableStateOf("") }
     var cliente by remember { mutableStateOf("") }
     var direccionEmisor by remember { mutableStateOf("") }
@@ -63,6 +69,12 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
     var iva by remember { mutableStateOf("21.0") }
     var irpf by remember { mutableStateOf("0.0") }
     var total by remember { mutableStateOf("0.0") }
+
+    var proyectoSeleccionadoNombre by remember { mutableStateOf("") }
+    var proyectoSeleccionadoCodigo by remember { mutableStateOf("") }
+    var expanded by remember { mutableStateOf(false) }
+
+
 
     var tipoFactura by remember { mutableStateOf("Compra") } // Estado de selección
 
@@ -103,30 +115,77 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
                 }
             }
 
+            item {
+                Text("Selecciona un Proyecto:", style = MaterialTheme.typography.titleSmall)
+            }
+
+            item {
+                ExposedDropdownMenuBox(
+                    expanded = expanded,
+                    onExpandedChange = { expanded = !expanded }
+                ) {
+                    OutlinedTextField(
+                        value = proyectoSeleccionadoNombre,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Proyecto") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .menuAnchor()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        proyectos.forEach { proyecto ->
+                            DropdownMenuItem(
+                                text = { Text(proyecto.nombre) },
+                                onClick = {
+                                    proyectoSeleccionadoNombre = proyecto.nombre
+                                    proyectoSeleccionadoCodigo = proyecto.codigo
+                                    cliente = proyecto.cliente
+                                    cifCliente = proyecto.cifCliente
+                                    direccionCliente = proyecto.direccionCliente
+
+                                    nombre = proyecto.autor
+                                    cifEmisor = proyecto.cifAutor
+                                    direccionEmisor = proyecto.direccionAutor
+
+
+                                    expanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+
+
             // Campos comunes
-            item { InputDeDatos(value = numeroFactura, onValueChange = { numeroFactura = it }, label = "Número de Factura") }
+            item { InputDeDatos(value = numeroFactura, onValueChange = { numeroFactura = it }, label = "Número de Factura", enabled = false) }
             item { InputDeDatos(value = fecha, onValueChange = { fecha = it }, label = "Fecha de Emisión", enabled = false) }
 
             when (tipoFactura) {
                 "Compra" -> {
                     item { Text("Datos del Proveedor:", style = MaterialTheme.typography.titleSmall) }
-                    item { InputDeDatos(value = nombre, onValueChange = { nombre = it }, label = "Proveedor:") }
-                    item { InputDeDatos(value = cifEmisor, onValueChange = { cifEmisor = it }, label = "CIF/NIF del Proveedor") }
-                    item { InputDeDatos(value = direccionEmisor, onValueChange = { direccionEmisor = it }, label = "Dirección del Proveedor") }
+                    item { InputDeDatos(value = nombre, onValueChange = { nombre = it }, label = "Proveedor:", enabled = false) }
+                    item { InputDeDatos(value = cifEmisor, onValueChange = { cifEmisor = it }, label = "CIF/NIF del Proveedor", enabled = false) }
+                    item { InputDeDatos(value = direccionEmisor, onValueChange = { direccionEmisor = it }, label = "Dirección del Proveedor", enabled = false) }
                     item { Text("Datos del Cliente:", style = MaterialTheme.typography.titleSmall) }
-                    item { InputDeDatos(value = cliente, onValueChange = { cliente = it }, label = "Cliente:") }
-                    item { InputDeDatos(value = cifCliente, onValueChange = { cifCliente = it }, label = "CIF/NIF del Cliente") }
-                    item { InputDeDatos(value = direccionCliente, onValueChange = { direccionCliente = it }, label = "Dirección del Cliente") }
+                    item { InputDeDatos(value = cliente, onValueChange = { cliente = it }, label = "Cliente:", enabled = false) }
+                    item { InputDeDatos(value = cifCliente, onValueChange = { cifCliente = it }, label = "CIF/NIF del Cliente", enabled = false) }
+                    item { InputDeDatos(value = direccionCliente, onValueChange = { direccionCliente = it }, label = "Dirección del Cliente", enabled = false) }
                 }
                 "Venta" -> {
                     item { Text("Datos del Cliente:", style = MaterialTheme.typography.titleSmall) }
-                    item { InputDeDatos(value = cliente, onValueChange = { cliente = it }, label = "Cliente:") }
-                    item { InputDeDatos(value = cifCliente, onValueChange = { cifCliente = it }, label = "CIF/NIF del Cliente") }
-                    item { InputDeDatos(value = direccionCliente, onValueChange = { direccionCliente = it }, label = "Dirección del Cliente") }
+                    item { InputDeDatos(value = cliente, onValueChange = { cliente = it }, label = "Cliente:", enabled = false) }
+                    item { InputDeDatos(value = cifCliente, onValueChange = { cifCliente = it }, label = "CIF/NIF del Cliente", enabled = false) }
+                    item { InputDeDatos(value = direccionCliente, onValueChange = { direccionCliente = it }, label = "Dirección del Cliente", enabled = false) }
                     item { Text("Datos del Proveedor:", style = MaterialTheme.typography.titleSmall) }
-                    item { InputDeDatos(value = nombre, onValueChange = { nombre = it }, label = "Proveedor:") }
-                    item { InputDeDatos(value = cifEmisor, onValueChange = { cifEmisor = it }, label = "CIF/NIF del Proveedor") }
-                    item { InputDeDatos(value = direccionEmisor, onValueChange = { direccionEmisor = it }, label = "Dirección del Proveedor") }
+                    item { InputDeDatos(value = nombre, onValueChange = { nombre = it }, label = "Proveedor:", enabled = false) }
+                    item { InputDeDatos(value = cifEmisor, onValueChange = { cifEmisor = it }, label = "CIF/NIF del Proveedor", enabled = false) }
+                    item { InputDeDatos(value = direccionEmisor, onValueChange = { direccionEmisor = it }, label = "Dirección del Proveedor", enabled = false) }
 
                 }
             }
@@ -175,6 +234,7 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
                 )
             }
 
+
             // Botón de guardar
             item {
                 Button(
@@ -192,7 +252,8 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
                             iva = iva.toDoubleOrNull() ?: 0.0,
                             irpf = irpf.toDoubleOrNull() ?: 0.0,
                             total = total.toDoubleOrNull() ?: 0.0,
-                            tipo = tipoFactura
+                            tipo = tipoFactura,
+                            codigoProyecto = proyectoSeleccionadoCodigo
                         )
                         viewModel.agregarFactura(nuevaFactura)
                         navController.popBackStack()
@@ -217,5 +278,15 @@ fun calcularTotal(base: String, iva: String, irpf: String): String {
     val irpfCalculado = baseImponible * (irpfPorcentaje / 100)
 
     return String.format("%.2f", baseImponible + ivaCalculado - irpfCalculado)
+}
+
+fun generarNumeroFactura(): String {
+    val letras = (1..3)
+        .map { ('A'..'Z').random() }
+        .joinToString("")
+
+    val numeros = (100..999).random()
+
+    return "$letras/$numeros"
 }
 

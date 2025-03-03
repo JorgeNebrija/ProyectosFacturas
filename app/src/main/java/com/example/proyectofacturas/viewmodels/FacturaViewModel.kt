@@ -8,14 +8,19 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import com.example.proyectofacturas.modelos.Factura
+import com.example.proyectofacturas.modelos.Proyecto
 
 class FacturaViewModel : ViewModel() {
     private val db = Firebase.firestore
     private val _facturas = MutableLiveData<List<Factura>>()
     val facturas: LiveData<List<Factura>> = _facturas
 
+    private val _proyectos = MutableLiveData<List<Proyecto>>()
+    val proyectos: LiveData<List<Proyecto>> = _proyectos
+
     init {
         cargarFacturas()
+        cargarProyectos()
     }
 
     /**
@@ -26,7 +31,7 @@ class FacturaViewModel : ViewModel() {
             .get()
             .addOnSuccessListener { result ->
                 val listaFacturas = result.documents.mapNotNull { document ->
-                    document.toObject<Factura>()?.copy(id = document.id) // ✅ Corrección en la asignación de ID
+                    document.toObject<Factura>()?.copy(id = document.id)
                 }
                 _facturas.value = listaFacturas
             }
@@ -40,10 +45,10 @@ class FacturaViewModel : ViewModel() {
      */
     fun agregarFactura(nuevaFactura: Factura) {
         db.collection("facturas")
-            .add(nuevaFactura) // ✅ Firestore generará el ID automáticamente
+            .add(nuevaFactura)
             .addOnSuccessListener { documentReference ->
                 Log.d("FacturaViewModel", "Factura agregada con ID: ${documentReference.id}")
-                cargarFacturas() // Recargar lista después de añadir una nueva factura
+                cargarFacturas()
             }
             .addOnFailureListener { exception ->
                 Log.e("FacturaViewModel", "Error al agregar factura", exception)
@@ -74,4 +79,51 @@ class FacturaViewModel : ViewModel() {
 
         return facturaActual
     }
+
+    /**
+     * Actualizar una factura existente en Firestore
+     */
+    fun actualizarFactura(id: String, facturaActualizada: Factura) {
+        db.collection("facturas").document(id)
+            .set(facturaActualizada)
+            .addOnSuccessListener {
+                Log.d("FacturaViewModel", "Factura actualizada con ID: $id")
+                cargarFacturas() // Recargar la lista tras actualizar
+            }
+            .addOnFailureListener { exception ->
+                Log.e("FacturaViewModel", "Error al actualizar la factura con ID: $id", exception)
+            }
+    }
+
+    /**
+     * Eliminar una factura por su ID
+     */
+    fun eliminarFactura(id: String) {
+        db.collection("facturas").document(id)
+            .delete()
+            .addOnSuccessListener {
+                Log.d("FacturaViewModel", "Factura eliminada correctamente con ID: $id")
+                cargarFacturas()
+            }
+            .addOnFailureListener { exception ->
+                Log.e("FacturaViewModel", "Error al eliminar la factura con ID: $id", exception)
+            }
+    }
+
+    fun cargarProyectos() {
+        db.collection("proyectos")
+            .get()
+            .addOnSuccessListener { result ->
+                val listaProyectos = result.documents.mapNotNull { document ->
+                    document.toObject<Proyecto>()?.copy(id = document.id)
+                }
+                _proyectos.value = listaProyectos
+            }
+            .addOnFailureListener { exception ->
+                Log.e("FacturaViewModel", "Error al obtener proyectos", exception)
+            }
+    }
+
+
+
 }
