@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -38,6 +39,10 @@ fun PantallaPerfil(navController: NavHostController, facturaViewModel: FacturaVi
 
     var showDialog by remember { mutableStateOf(false) }
     var showLogoutDialog by remember { mutableStateOf(false) } // Estado para la alerta de cerrar sesión
+    var showPrivacyDialog by remember { mutableStateOf(false) } // Estado para la alerta de Políticas de Privacidad
+    var showChangePasswordDialog by remember { mutableStateOf(false) }
+
+
 
     // Diálogo de información personal
     if (showDialog) {
@@ -97,6 +102,35 @@ fun PantallaPerfil(navController: NavHostController, facturaViewModel: FacturaVi
             containerColor = Blanco
         )
     }
+    // Diálogo de Políticas de Privacidad
+    if (showPrivacyDialog) {
+        AlertDialog(
+            onDismissRequest = { showPrivacyDialog = false },
+            title = { Text(text = "Política de Privacidad", color = Color.Black) },
+            text = {
+                Column {
+                    Text(
+                        text = stringResource(id = R.string.politica_privacidad),
+                        color = Color.Black
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = { showPrivacyDialog = false },
+                    colors = ButtonDefaults.buttonColors(containerColor = AzulPrincipal)
+                ) {
+                    Text("Aceptar")
+                }
+            },
+            containerColor = Blanco
+        )
+    }
+    // AQUÍ se coloca el if para mostrar la alerta cuando showChangePasswordDialog sea true
+    if (showChangePasswordDialog) {
+        CambiarContrasenaDialog(onDismiss = { showChangePasswordDialog = false })
+    }
+
 
     // Recuperar datos del usuario desde Firestore
     LaunchedEffect(Unit) {
@@ -189,13 +223,15 @@ fun PantallaPerfil(navController: NavHostController, facturaViewModel: FacturaVi
                 navController.navigate("facturas")
             }
 
+            // Opción de Políticas de Privacidad con alerta
             PerfilOptionItem(icon = R.drawable.ic_politica, text = "Política de privacidad") {
-                navController.navigate("politica")
+                showPrivacyDialog = true // Muestra la alerta en lugar de navegar
             }
 
-            PerfilOptionItem(icon = R.drawable.ic_configuraciones, text = "Configuraciones") {
-                navController.navigate("configuraciones")
+            PerfilOptionItem(icon = R.drawable.ic_configuraciones, text = "Cambiar Contraseña") {
+                showChangePasswordDialog = true
             }
+
 
             // Opción de cerrar sesión con diálogo de confirmación
             PerfilOptionItem(icon = R.drawable.ic_cerrar, text = "Cerrar sesión") {
@@ -240,5 +276,72 @@ fun PerfilOptionItem(icon: Int, text: String, onClick: () -> Unit) {
             modifier = Modifier.size(16.dp)
         )
     }
+
 }
+@Composable
+fun CambiarContrasenaDialog(onDismiss: () -> Unit) {
+    var email by remember { mutableStateOf("") }
+    var mensajeError by remember { mutableStateOf<String?>(null) }
+    var mensajeExito by remember { mutableStateOf<String?>(null) }
+
+    AlertDialog(
+        onDismissRequest = { onDismiss() },
+        title = { Text(text = "Cambiar Contraseña", color = Color.Black) },
+        text = {
+            Column {
+                Text(text = "Ingresa tu correo electrónico para recibir un enlace de recuperación.", color = Color.Black)
+                Spacer(modifier = Modifier.height(8.dp))
+
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    label = { Text("Correo electrónico") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                mensajeError?.let {
+                    Text(text = it, color = Color.Red, fontSize = 14.sp)
+                }
+
+                mensajeExito?.let {
+                    Text(text = it, color = Color.Green, fontSize = 14.sp)
+                }
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    if (email.isNotEmpty()) {
+                        FirebaseAuth.getInstance().sendPasswordResetEmail(email)
+                            .addOnSuccessListener {
+                                mensajeExito = "Correo enviado. Revisa tu bandeja de entrada."
+                                mensajeError = null
+                            }
+                            .addOnFailureListener { e ->
+                                mensajeError = "Error: ${e.message}"
+                                mensajeExito = null
+                            }
+                    } else {
+                        mensajeError = "El correo no puede estar vacío."
+                        mensajeExito = null
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = AzulPrincipal)
+            ) {
+                Text("Enviar Instrucciones")
+            }
+        },
+        dismissButton = {
+            Button(
+                onClick = { onDismiss() },
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
+            ) {
+                Text("Cancelar")
+            }
+        },
+        containerColor = Blanco
+    )
+}
+
 
