@@ -114,11 +114,8 @@ class FacturaViewModel : ViewModel() {
         db.collection("proyectos")
             .get()
             .addOnSuccessListener { result ->
-                val listaProyectos = mutableListOf<Proyecto>()
-                for (document in result) {
-                    val nombre = document.getString("nombre") ?: "Sin nombre"
-                    val codigo = document.getString("codigo") ?: "Sin código"
-                    listaProyectos.add(Proyecto(nombre = nombre, codigo = codigo))
+                val listaProyectos = result.documents.mapNotNull { document ->
+                    document.toObject<Proyecto>()?.copy(id = document.id)
                 }
                 _proyectos.value = listaProyectos
             }
@@ -126,5 +123,7 @@ class FacturaViewModel : ViewModel() {
                 Log.e("FacturaViewModel", "Error al obtener proyectos", exception)
             }
     }
+
+
 
 }

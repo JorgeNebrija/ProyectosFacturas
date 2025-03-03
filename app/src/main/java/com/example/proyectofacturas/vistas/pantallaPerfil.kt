@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -27,7 +28,6 @@ import com.example.proyectofacturas.viewmodels.FacturaViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
-
 @Composable
 fun PantallaPerfil(navController: NavHostController, facturaViewModel: FacturaViewModel) {
     var userName by remember { mutableStateOf("Cargando...") }
@@ -36,9 +36,15 @@ fun PantallaPerfil(navController: NavHostController, facturaViewModel: FacturaVi
     var telefono by remember { mutableStateOf("Cargando...") }
     var foto by remember { mutableStateOf("Cargando...") }
     var error by remember { mutableStateOf("Cargando...") }
+
     var showDialog by remember { mutableStateOf(false) }
+    var showLogoutDialog by remember { mutableStateOf(false) } // Estado para la alerta de cerrar sesión
+    var showPrivacyDialog by remember { mutableStateOf(false) } // Estado para la alerta de Políticas de Privacidad
+    var showChangePasswordDialog by remember { mutableStateOf(false) }
 
 
+
+    // Diálogo de información personal
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { showDialog = false },
@@ -49,24 +55,84 @@ fun PantallaPerfil(navController: NavHostController, facturaViewModel: FacturaVi
                     Text(text = "Correo: $correo", color = Color.Black)
                     Text(text = "Teléfono: $telefono", color = Color.Black)
                 }
-
             },
             confirmButton = {
-                Button(onClick = { showDialog = false }, colors = ButtonDefaults.buttonColors(
-                    containerColor = AzulPrincipal, // Color personalizado para el botón
-                    contentColor = Color.White // Color del texto del botón
-                )) {
+                Button(
+                    onClick = { showDialog = false },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = AzulPrincipal,
+                        contentColor = Color.White
+                    )
+                ) {
                     Text("Cerrar")
                 }
             },
-                    containerColor = Blanco
+            containerColor = Blanco
         )
-    } else {
+    }
 
+    // Diálogo de confirmación de cierre de sesión
+    if (showLogoutDialog) {
+        AlertDialog(
+            onDismissRequest = { showLogoutDialog = false },
+            title = { Text(text = "Cerrar Sesión", color = Color.Black) },
+            text = { Text("¿Estás seguro de que quieres cerrar sesión?", color = Color.Black) },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        FirebaseAuth.getInstance().signOut()
+                        navController.navigate("pantallaLogin") {
+                            popUpTo("pantallaPerfil") { inclusive = true }
+                        }
+                        showLogoutDialog = false
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = AzulPrincipal)
+                ) {
+                    Text("Cerrar sesión")
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = { showLogoutDialog = false },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
+                ) {
+                    Text("Cancelar")
+                }
+            },
+            containerColor = Blanco
+        )
+    }
+    // Diálogo de Políticas de Privacidad
+    if (showPrivacyDialog) {
+        AlertDialog(
+            onDismissRequest = { showPrivacyDialog = false },
+            title = { Text(text = "Política de Privacidad", color = Color.Black) },
+            text = {
+                Column {
+                    Text(
+                        text = stringResource(id = R.string.politica_privacidad),
+                        color = Color.Black
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = { showPrivacyDialog = false },
+                    colors = ButtonDefaults.buttonColors(containerColor = AzulPrincipal)
+                ) {
+                    Text("Aceptar")
+                }
+            },
+            containerColor = Blanco
+        )
+    }
+    // AQUÍ se coloca el if para mostrar la alerta cuando showChangePasswordDialog sea true
+    if (showChangePasswordDialog) {
+        CambiarContrasenaDialog(onDismiss = { showChangePasswordDialog = false })
     }
 
 
-    // Recuperar el nombre del usuario desde Firestore
+    // Recuperar datos del usuario desde Firestore
     LaunchedEffect(Unit) {
         val currentUser = FirebaseAuth.getInstance().currentUser
         currentUser?.uid?.let { uid ->
@@ -106,7 +172,6 @@ fun PantallaPerfil(navController: NavHostController, facturaViewModel: FacturaVi
             }
         }
 
-        // Foto de perfil y nombre
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxWidth()
@@ -136,7 +201,7 @@ fun PantallaPerfil(navController: NavHostController, facturaViewModel: FacturaVi
             }
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = userName,  // Aquí se muestra el nombre del usuario
+                text = userName,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
@@ -145,42 +210,35 @@ fun PantallaPerfil(navController: NavHostController, facturaViewModel: FacturaVi
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Opciones de perfil
         Column(
             modifier = Modifier
                 .padding(20.dp)
-                .weight(1f)  // Esto hará que esta columna ocupe el espacio restante
+                .weight(1f)
         ) {
-            // Información Personal (Abre un diálogo)
             PerfilOptionItem(icon = R.drawable.ic_informacion, text = "Información Personal") {
-                showDialog = true;
+                showDialog = true
             }
 
-            // Facturas (Navega a otra pantalla)
             PerfilOptionItem(icon = R.drawable.ic_factura, text = "Facturas") {
                 navController.navigate("facturas")
             }
 
-            // Política de privacidad (Navega a otra pantalla)
+            // Opción de Políticas de Privacidad con alerta
             PerfilOptionItem(icon = R.drawable.ic_politica, text = "Política de privacidad") {
-                navController.navigate("politica")
+                showPrivacyDialog = true // Muestra la alerta en lugar de navegar
             }
 
-            // Configuraciones (Navega a otra pantalla)
-            PerfilOptionItem(icon = R.drawable.ic_configuraciones, text = "Configuraciones") {
-                navController.navigate("configuraciones")
+            PerfilOptionItem(icon = R.drawable.ic_configuraciones, text = "Cambiar Contraseña") {
+                showChangePasswordDialog = true
             }
 
-            // Cerrar sesión (Ejecuta la función de logout)
+
+            // Opción de cerrar sesión con diálogo de confirmación
             PerfilOptionItem(icon = R.drawable.ic_cerrar, text = "Cerrar sesión") {
-                FirebaseAuth.getInstance().signOut()
-                navController.navigate("pantallaLogin") {
-                    popUpTo("pantallaPerfil") { inclusive = true }
-                }
+                showLogoutDialog = true
             }
         }
     }
-
 }
 
 
@@ -218,5 +276,72 @@ fun PerfilOptionItem(icon: Int, text: String, onClick: () -> Unit) {
             modifier = Modifier.size(16.dp)
         )
     }
+
 }
+@Composable
+fun CambiarContrasenaDialog(onDismiss: () -> Unit) {
+    var email by remember { mutableStateOf("") }
+    var mensajeError by remember { mutableStateOf<String?>(null) }
+    var mensajeExito by remember { mutableStateOf<String?>(null) }
+
+    AlertDialog(
+        onDismissRequest = { onDismiss() },
+        title = { Text(text = "Cambiar Contraseña", color = Color.Black) },
+        text = {
+            Column {
+                Text(text = "Ingresa tu correo electrónico para recibir un enlace de recuperación.", color = Color.Black)
+                Spacer(modifier = Modifier.height(8.dp))
+
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    label = { Text("Correo electrónico") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                mensajeError?.let {
+                    Text(text = it, color = Color.Red, fontSize = 14.sp)
+                }
+
+                mensajeExito?.let {
+                    Text(text = it, color = Color.Green, fontSize = 14.sp)
+                }
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    if (email.isNotEmpty()) {
+                        FirebaseAuth.getInstance().sendPasswordResetEmail(email)
+                            .addOnSuccessListener {
+                                mensajeExito = "Correo enviado. Revisa tu bandeja de entrada."
+                                mensajeError = null
+                            }
+                            .addOnFailureListener { e ->
+                                mensajeError = "Error: ${e.message}"
+                                mensajeExito = null
+                            }
+                    } else {
+                        mensajeError = "El correo no puede estar vacío."
+                        mensajeExito = null
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = AzulPrincipal)
+            ) {
+                Text("Enviar Instrucciones")
+            }
+        },
+        dismissButton = {
+            Button(
+                onClick = { onDismiss() },
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
+            ) {
+                Text("Cancelar")
+            }
+        },
+        containerColor = Blanco
+    )
+}
+
 

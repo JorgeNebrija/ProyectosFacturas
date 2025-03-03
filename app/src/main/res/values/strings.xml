@@ -1,3 +1,19 @@
 <resources>
     <string name="app_name">ProyectoFacturas</string>
+    <string name="politica_privacidad">
+    Tu privacidad es importante para nosotros.\n\n
+    Esta aplicación de facturación almacena y procesa datos personales con el fin de gestionar tus facturas y transacciones de manera segura.\n\n
+
+    Datos recopilados:\n
+    - Nombre y apellido\n
+    - Correo electrónico\n
+    - Teléfono\n\n
+
+    Uso de datos:\n
+    La información es utilizada exclusivamente para la gestión de facturas y no será compartida con terceros sin tu consentimiento.\n\n
+
+    Para más información, puedes contactarnos en soporte@appfacturas.com.
+</string>
+
+
 </resources>
