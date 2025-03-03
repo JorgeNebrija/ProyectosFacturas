@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -95,7 +96,8 @@ fun PantallaLogin(navHostController: NavHostController) {
             painter = painterResource(id = R.drawable.freelance_logo),
             contentDescription = "Logo",
             modifier = Modifier.size(200.dp),
-            tint = AzulPrincipal
+            tint = AzulPrincipal,
+
         )
 
 
@@ -181,21 +183,7 @@ fun PantallaLogin(navHostController: NavHostController) {
             modifier = Modifier.fillMaxWidth(0.85f),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Checkbox(
-                checked = rememberMe.value,
-                onCheckedChange = { rememberMe.value = it },
-                colors = CheckboxDefaults.colors(Color.Gray)
-            )
-
-            Text(text = "Recuérdame", color = Color.Gray)
-            Spacer(modifier = Modifier.weight(1f))
-            Text(
-                text = "¿Olvidaste tu contraseña?",
-                color = AzulPrincipal,
-                modifier = Modifier.clickable { navHostController.navigate("pantallaRecuperarContrasena") }
-            )
-        }
-
+    }
         Spacer(modifier = Modifier.height(16.dp))
 
         // Botón de iniciar sesión
