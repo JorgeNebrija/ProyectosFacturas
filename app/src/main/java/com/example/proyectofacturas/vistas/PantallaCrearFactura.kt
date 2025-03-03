@@ -56,6 +56,7 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
         )
     }
 
+    val proyectos by viewModel.proyectos.observeAsState(emptyList())
 
 
     var nombre by remember { mutableStateOf("") }
@@ -73,7 +74,7 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
     var proyectoSeleccionadoCodigo by remember { mutableStateOf("") }
     var expanded by remember { mutableStateOf(false) }
 
-    val proyectos by viewModel.proyectos.observeAsState(emptyList())
+
 
     var tipoFactura by remember { mutableStateOf("Compra") } // Estado de selección
 
@@ -143,6 +144,15 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
                                 onClick = {
                                     proyectoSeleccionadoNombre = proyecto.nombre
                                     proyectoSeleccionadoCodigo = proyecto.codigo
+                                    cliente = proyecto.cliente
+                                    cifCliente = proyecto.cifCliente
+                                    direccionCliente = proyecto.direccionCliente
+
+                                    nombre = proyecto.autor
+                                    cifEmisor = proyecto.cifAutor
+                                    direccionEmisor = proyecto.direccionAutor
+
+
                                     expanded = false
                                 }
                             )
@@ -159,23 +169,23 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
             when (tipoFactura) {
                 "Compra" -> {
                     item { Text("Datos del Proveedor:", style = MaterialTheme.typography.titleSmall) }
-                    item { InputDeDatos(value = nombre, onValueChange = { nombre = it }, label = "Proveedor:") }
-                    item { InputDeDatos(value = cifEmisor, onValueChange = { cifEmisor = it }, label = "CIF/NIF del Proveedor") }
-                    item { InputDeDatos(value = direccionEmisor, onValueChange = { direccionEmisor = it }, label = "Dirección del Proveedor") }
+                    item { InputDeDatos(value = nombre, onValueChange = { nombre = it }, label = "Proveedor:", enabled = false) }
+                    item { InputDeDatos(value = cifEmisor, onValueChange = { cifEmisor = it }, label = "CIF/NIF del Proveedor", enabled = false) }
+                    item { InputDeDatos(value = direccionEmisor, onValueChange = { direccionEmisor = it }, label = "Dirección del Proveedor", enabled = false) }
                     item { Text("Datos del Cliente:", style = MaterialTheme.typography.titleSmall) }
-                    item { InputDeDatos(value = cliente, onValueChange = { cliente = it }, label = "Cliente:") }
-                    item { InputDeDatos(value = cifCliente, onValueChange = { cifCliente = it }, label = "CIF/NIF del Cliente") }
-                    item { InputDeDatos(value = direccionCliente, onValueChange = { direccionCliente = it }, label = "Dirección del Cliente") }
+                    item { InputDeDatos(value = cliente, onValueChange = { cliente = it }, label = "Cliente:", enabled = false) }
+                    item { InputDeDatos(value = cifCliente, onValueChange = { cifCliente = it }, label = "CIF/NIF del Cliente", enabled = false) }
+                    item { InputDeDatos(value = direccionCliente, onValueChange = { direccionCliente = it }, label = "Dirección del Cliente", enabled = false) }
                 }
                 "Venta" -> {
                     item { Text("Datos del Cliente:", style = MaterialTheme.typography.titleSmall) }
-                    item { InputDeDatos(value = cliente, onValueChange = { cliente = it }, label = "Cliente:") }
-                    item { InputDeDatos(value = cifCliente, onValueChange = { cifCliente = it }, label = "CIF/NIF del Cliente") }
-                    item { InputDeDatos(value = direccionCliente, onValueChange = { direccionCliente = it }, label = "Dirección del Cliente") }
+                    item { InputDeDatos(value = cliente, onValueChange = { cliente = it }, label = "Cliente:", enabled = false) }
+                    item { InputDeDatos(value = cifCliente, onValueChange = { cifCliente = it }, label = "CIF/NIF del Cliente", enabled = false) }
+                    item { InputDeDatos(value = direccionCliente, onValueChange = { direccionCliente = it }, label = "Dirección del Cliente", enabled = false) }
                     item { Text("Datos del Proveedor:", style = MaterialTheme.typography.titleSmall) }
-                    item { InputDeDatos(value = nombre, onValueChange = { nombre = it }, label = "Proveedor:") }
-                    item { InputDeDatos(value = cifEmisor, onValueChange = { cifEmisor = it }, label = "CIF/NIF del Proveedor") }
-                    item { InputDeDatos(value = direccionEmisor, onValueChange = { direccionEmisor = it }, label = "Dirección del Proveedor") }
+                    item { InputDeDatos(value = nombre, onValueChange = { nombre = it }, label = "Proveedor:", enabled = false) }
+                    item { InputDeDatos(value = cifEmisor, onValueChange = { cifEmisor = it }, label = "CIF/NIF del Proveedor", enabled = false) }
+                    item { InputDeDatos(value = direccionEmisor, onValueChange = { direccionEmisor = it }, label = "Dirección del Proveedor", enabled = false) }
 
                 }
             }
