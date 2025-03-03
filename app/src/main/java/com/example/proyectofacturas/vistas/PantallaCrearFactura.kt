@@ -49,6 +49,7 @@ fun InputDeDatos(
 @Composable
 fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewModel) {
 
+    var errorMessage by remember { mutableStateOf("") }
     var numeroFactura by remember { mutableStateOf(generarNumeroFactura()) }
     var fecha by remember {
         mutableStateOf(
@@ -237,36 +238,87 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
 
             // Botón de guardar
             item {
+                // Botón de guardar y mensaje de error fuera de LazyColumn
                 Button(
                     onClick = {
-                        val nuevaFactura = Factura(
-                            numeroFactura = numeroFactura,
-                            fecha = fecha,
-                            nombre = nombre,
-                            direccion = direccionEmisor,
-                            cliente = cliente,
-                            direccionCliente = direccionCliente,
-                            cif = cifEmisor,
-                            cifCliente = cifCliente,
-                            baseImponible = baseImponible.toDoubleOrNull() ?: 0.0,
-                            iva = iva.toDoubleOrNull() ?: 0.0,
-                            irpf = irpf.toDoubleOrNull() ?: 0.0,
-                            total = total.toDoubleOrNull() ?: 0.0,
-                            tipo = tipoFactura,
-                            codigoProyecto = proyectoSeleccionadoCodigo
-                        )
-                        viewModel.agregarFactura(nuevaFactura)
-                        navController.popBackStack()
+                        if (validarCampos(
+                                numeroFactura,
+                                nombre,
+                                cliente,
+                                direccionEmisor,
+                                direccionCliente,
+                                cifEmisor,
+                                cifCliente,
+                                baseImponible,
+                                iva,
+                                irpf
+                            )
+                        ) {
+                            val nuevaFactura = Factura(
+                                numeroFactura = numeroFactura,
+                                fecha = fecha,
+                                nombre = nombre,
+                                direccion = direccionEmisor,
+                                cliente = cliente,
+                                direccionCliente = direccionCliente,
+                                cif = cifEmisor,
+                                cifCliente = cifCliente,
+                                baseImponible = baseImponible.toDoubleOrNull() ?: 0.0,
+                                iva = iva.toDoubleOrNull() ?: 0.0,
+                                irpf = irpf.toDoubleOrNull() ?: 0.0,
+                                total = total.toDoubleOrNull() ?: 0.0,
+                                tipo = tipoFactura,
+                                codigoProyecto = proyectoSeleccionadoCodigo
+                            )
+                            viewModel.agregarFactura(nuevaFactura)
+                            navController.popBackStack()
+                        } else {
+                            errorMessage = "Todos los campos son obligatorios."
+                        }
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = AzulPrincipal),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("Guardar y Enviar", color = Color.White)
                 }
+
+// Mostrar mensaje de error inmediatamente si hay campos vacíos
+                if (errorMessage.isNotEmpty()) {
+                    Text(
+                        text = errorMessage,
+                        color = Color.Red,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
+                }
             }
         }
     }
 }
+
+fun validarCampos(
+    numeroFactura: String,
+    nombre: String,
+    cliente: String,
+    direccionEmisor: String,
+    direccionCliente: String,
+    cifEmisor: String,
+    cifCliente: String,
+    baseImponible: String,
+    iva: String,
+    irpf: String
+): Boolean {
+    return numeroFactura.isNotBlank() &&
+            nombre.isNotBlank() &&
+            cliente.isNotBlank() &&
+            direccionEmisor.isNotBlank() &&
+            direccionCliente.isNotBlank() &&
+            cifEmisor.isNotBlank() &&
+            cifCliente.isNotBlank() &&
+            baseImponible.isNotBlank() &&
+            iva.isNotBlank() &&
+            irpf.isNotBlank()
+}
+
 
 // Función para calcular el total
 fun calcularTotal(base: String, iva: String, irpf: String): String {
@@ -289,4 +341,6 @@ fun generarNumeroFactura(): String {
 
     return "$letras/$numeros"
 }
+
+
 
