@@ -19,7 +19,6 @@ import java.util.*
 import com.example.proyectofacturas.componentes.BottomNavigationBar
 import com.example.proyectofacturas.componentes.Header
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InputDeDatos(
@@ -28,7 +27,6 @@ fun InputDeDatos(
     label: String,
     enabled: Boolean = true,
     keyboardType: KeyboardType = KeyboardType.Text,
-    isNumberInput: Boolean = false
 ) {
     OutlinedTextField(
         value = value,
@@ -39,8 +37,8 @@ fun InputDeDatos(
         modifier = Modifier.fillMaxWidth(),
         colors = TextFieldDefaults.outlinedTextFieldColors(
             containerColor = Color.White,
-            focusedBorderColor = Color.Transparent, // Borde transparente cuando está enfocado
-            unfocusedBorderColor = Color.Transparent // Borde transparente cuando no está enfocado
+            focusedBorderColor = Color.Transparent,
+            unfocusedBorderColor = Color.Transparent
         )
     )
 }
@@ -49,16 +47,10 @@ fun InputDeDatos(
 @Composable
 fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewModel) {
 
-    var errorMessage by remember { mutableStateOf("") }
     var numeroFactura by remember { mutableStateOf(generarNumeroFactura()) }
-    var fecha by remember {
-        mutableStateOf(
-            SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(Date())
-        )
-    }
+    var fecha by remember { mutableStateOf(SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(Date())) }
 
     val proyectos by viewModel.proyectos.observeAsState(emptyList())
-
 
     var nombre by remember { mutableStateOf("") }
     var cliente by remember { mutableStateOf("") }
@@ -66,18 +58,15 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
     var direccionCliente by remember { mutableStateOf("") }
     var cifEmisor by remember { mutableStateOf("") }
     var cifCliente by remember { mutableStateOf("") }
-    var baseImponible by remember { mutableStateOf("") }
+    var baseImponible by remember { mutableStateOf("0.0") }
     var iva by remember { mutableStateOf("21.0") }
     var irpf by remember { mutableStateOf("0.0") }
-    var total by remember { mutableStateOf("0.0") }
 
     var proyectoSeleccionadoNombre by remember { mutableStateOf("") }
     var proyectoSeleccionadoCodigo by remember { mutableStateOf("") }
     var expanded by remember { mutableStateOf(false) }
 
-
-
-    var tipoFactura by remember { mutableStateOf("Compra") } // Estado de selección
+    var tipoFactura by remember { mutableStateOf("Compra") }
 
     Scaffold(
         topBar = { Header(navController = navController) },
@@ -90,7 +79,6 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
                 .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Selección de Compra o Venta
             item {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -131,9 +119,7 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
                         readOnly = true,
                         label = { Text("Proyecto") },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .menuAnchor()
+                        modifier = Modifier.fillMaxWidth().menuAnchor()
                     )
                     ExposedDropdownMenu(
                         expanded = expanded,
@@ -153,7 +139,6 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
                                     cifEmisor = proyecto.cifAutor
                                     direccionEmisor = proyecto.direccionAutor
 
-
                                     expanded = false
                                 }
                             )
@@ -162,185 +147,98 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
                 }
             }
 
-
-            // Campos comunes
-            item { InputDeDatos(value = numeroFactura, onValueChange = { numeroFactura = it }, label = "Número de Factura", enabled = false) }
-            item { InputDeDatos(value = fecha, onValueChange = { fecha = it }, label = "Fecha de Emisión", enabled = false) }
+            item { InputDeDatos(numeroFactura, {}, "Número de Factura", enabled = false) }
+            item { InputDeDatos(fecha, {}, "Fecha de Emisión", enabled = false) }
 
             when (tipoFactura) {
                 "Compra" -> {
                     item { Text("Datos del Proveedor:", style = MaterialTheme.typography.titleSmall) }
-                    item { InputDeDatos(value = nombre, onValueChange = { nombre = it }, label = "Proveedor:", enabled = false) }
-                    item { InputDeDatos(value = cifEmisor, onValueChange = { cifEmisor = it }, label = "CIF/NIF del Proveedor", enabled = false) }
-                    item { InputDeDatos(value = direccionEmisor, onValueChange = { direccionEmisor = it }, label = "Dirección del Proveedor", enabled = false) }
+                    item { InputDeDatos(nombre, {}, "Proveedor:", enabled = false) }
+                    item { InputDeDatos(cifEmisor, {}, "CIF/NIF del Proveedor", enabled = false) }
+                    item { InputDeDatos(direccionEmisor, {}, "Dirección del Proveedor", enabled = false) }
                     item { Text("Datos del Cliente:", style = MaterialTheme.typography.titleSmall) }
-                    item { InputDeDatos(value = cliente, onValueChange = { cliente = it }, label = "Cliente:", enabled = false) }
-                    item { InputDeDatos(value = cifCliente, onValueChange = { cifCliente = it }, label = "CIF/NIF del Cliente", enabled = false) }
-                    item { InputDeDatos(value = direccionCliente, onValueChange = { direccionCliente = it }, label = "Dirección del Cliente", enabled = false) }
+                    item { InputDeDatos(cliente, {}, "Cliente:", enabled = false) }
+                    item { InputDeDatos(cifCliente, {}, "CIF/NIF del Cliente", enabled = false) }
+                    item { InputDeDatos(direccionCliente, {}, "Dirección del Cliente", enabled = false) }
                 }
                 "Venta" -> {
                     item { Text("Datos del Cliente:", style = MaterialTheme.typography.titleSmall) }
-                    item { InputDeDatos(value = cliente, onValueChange = { cliente = it }, label = "Cliente:", enabled = false) }
-                    item { InputDeDatos(value = cifCliente, onValueChange = { cifCliente = it }, label = "CIF/NIF del Cliente", enabled = false) }
-                    item { InputDeDatos(value = direccionCliente, onValueChange = { direccionCliente = it }, label = "Dirección del Cliente", enabled = false) }
+                    item { InputDeDatos(cliente, {}, "Cliente:", enabled = false) }
+                    item { InputDeDatos(cifCliente, {}, "CIF/NIF del Cliente", enabled = false) }
+                    item { InputDeDatos(direccionCliente, {}, "Dirección del Cliente", enabled = false) }
                     item { Text("Datos del Proveedor:", style = MaterialTheme.typography.titleSmall) }
-                    item { InputDeDatos(value = nombre, onValueChange = { nombre = it }, label = "Proveedor:", enabled = false) }
-                    item { InputDeDatos(value = cifEmisor, onValueChange = { cifEmisor = it }, label = "CIF/NIF del Proveedor", enabled = false) }
-                    item { InputDeDatos(value = direccionEmisor, onValueChange = { direccionEmisor = it }, label = "Dirección del Proveedor", enabled = false) }
-
+                    item { InputDeDatos(nombre, {}, "Proveedor:", enabled = false) }
+                    item { InputDeDatos(cifEmisor, {}, "CIF/NIF del Proveedor", enabled = false) }
+                    item { InputDeDatos(direccionEmisor, {}, "Dirección del Proveedor", enabled = false) }
                 }
             }
 
-            // Importes
             item { Text("Importes de la factura:", style = MaterialTheme.typography.titleSmall) }
+            item { InputDeDatos(baseImponible, { baseImponible = it }, "Base Imponible (€)", keyboardType = KeyboardType.Number) }
+            item { InputDeDatos(iva, { iva = it }, "IVA (%)", keyboardType = KeyboardType.Number) }
+            item { InputDeDatos(irpf, { irpf = it }, "IRPF (%)", keyboardType = KeyboardType.Number) }
             item {
                 InputDeDatos(
-                    value = baseImponible,
-                    onValueChange = {
-                        baseImponible = it
-                        total = calcularTotal(baseImponible, iva, irpf)
-                    },
-                    label = "Base Imponible (€)",
-                    keyboardType = KeyboardType.Number
-                )
-            }
-            item {
-                InputDeDatos(
-                    value = iva,
-                    onValueChange = {
-                        iva = it
-                        total = calcularTotal(baseImponible, iva, irpf)
-                    },
-                    label = "IVA (%)",
-                    keyboardType = KeyboardType.Number
-                )
-            }
-            item {
-                InputDeDatos(
-                    value = irpf,
-                    onValueChange = {
-                        irpf = it
-                        total = calcularTotal(baseImponible, iva, irpf)
-                    },
-                    label = "IRPF (%)",
-                    keyboardType = KeyboardType.Number
-                )
-            }
-            item {
-                InputDeDatos(
-                    value = total,
-                    onValueChange = { total = it },
+                    value = "%.2f".format(
+                        calcularTotal(
+                            baseImponible.toDoubleOrNull() ?: 0.0,
+                            iva.toDoubleOrNull() ?: 0.0,
+                            irpf.toDoubleOrNull() ?: 0.0
+                        )
+                    ),
+                    onValueChange = {},
                     label = "Total (€)",
                     enabled = false
                 )
             }
 
-
-            // Botón de guardar
             item {
-                // Botón de guardar y mensaje de error fuera de LazyColumn
                 Button(
                     onClick = {
-                        if (validarCampos(
-                                numeroFactura,
-                                nombre,
-                                cliente,
-                                direccionEmisor,
-                                direccionCliente,
-                                cifEmisor,
-                                cifCliente,
-                                baseImponible,
-                                iva,
-                                irpf
-                            )
-                        ) {
-                            val nuevaFactura = Factura(
-                                numeroFactura = numeroFactura,
-                                fecha = fecha,
-                                nombre = nombre,
-                                direccion = direccionEmisor,
-                                cliente = cliente,
-                                direccionCliente = direccionCliente,
-                                cif = cifEmisor,
-                                cifCliente = cifCliente,
-                                baseImponible = baseImponible.toDoubleOrNull() ?: 0.0,
-                                iva = iva.toDoubleOrNull() ?: 0.0,
-                                irpf = irpf.toDoubleOrNull() ?: 0.0,
-                                total = total.toDoubleOrNull() ?: 0.0,
-                                tipo = tipoFactura,
-                                codigoProyecto = proyectoSeleccionadoCodigo
-                            )
-                            viewModel.agregarFactura(nuevaFactura)
-                            navController.popBackStack()
-                        } else {
-                            errorMessage = "Todos los campos son obligatorios."
-                        }
+                        val totalCalculado = calcularTotal(
+                            baseImponible.toDoubleOrNull() ?: 0.0,
+                            iva.toDoubleOrNull() ?: 0.0,
+                            irpf.toDoubleOrNull() ?: 0.0
+                        )
+                        val nuevaFactura = Factura(
+                            numeroFactura = numeroFactura,
+                            fecha = fecha,
+                            nombre = nombre,
+                            direccion = direccionEmisor,
+                            cliente = cliente,
+                            direccionCliente = direccionCliente,
+                            cif = cifEmisor,
+                            cifCliente = cifCliente,
+                            baseImponible = baseImponible.toDoubleOrNull() ?: 0.0,
+                            iva = iva.toDoubleOrNull() ?: 0.0,
+                            irpf = irpf.toDoubleOrNull() ?: 0.0,
+                            total = totalCalculado,
+                            tipo = tipoFactura,
+                            codigoProyecto = proyectoSeleccionadoCodigo
+                        )
+
+
+                        viewModel.agregarFactura(nuevaFactura)
+                        navController.popBackStack()
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = AzulPrincipal),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("Guardar y Enviar", color = Color.White)
                 }
-
-// Mostrar mensaje de error inmediatamente si hay campos vacíos
-                if (errorMessage.isNotEmpty()) {
-                    Text(
-                        text = errorMessage,
-                        color = Color.Red,
-                        modifier = Modifier.padding(top = 8.dp)
-                    )
-                }
             }
         }
     }
 }
 
-fun validarCampos(
-    numeroFactura: String,
-    nombre: String,
-    cliente: String,
-    direccionEmisor: String,
-    direccionCliente: String,
-    cifEmisor: String,
-    cifCliente: String,
-    baseImponible: String,
-    iva: String,
-    irpf: String
-): Boolean {
-    return numeroFactura.isNotBlank() &&
-            nombre.isNotBlank() &&
-            cliente.isNotBlank() &&
-            direccionEmisor.isNotBlank() &&
-            direccionCliente.isNotBlank() &&
-            cifEmisor.isNotBlank() &&
-            cifCliente.isNotBlank() &&
-            baseImponible.isNotBlank() &&
-            iva.isNotBlank() &&
-            irpf.isNotBlank()
-}
-
-
-// Función para calcular el total
-fun calcularTotal(base: String, iva: String, irpf: String): String {
-    val baseImponible = base.toDoubleOrNull() ?: 0.0
-    val ivaPorcentaje = iva.toDoubleOrNull() ?: 0.0
-    val irpfPorcentaje = irpf.toDoubleOrNull() ?: 0.0
-
-    val ivaCalculado = baseImponible * (ivaPorcentaje / 100)
-    val irpfCalculado = baseImponible * (irpfPorcentaje / 100)
-
-    return String.format("%.2f", baseImponible + ivaCalculado - irpfCalculado)
+fun calcularTotal(base: Double, iva: Double, irpf: Double): Double {
+    val ivaCalculado = base * (iva / 100)
+    val irpfCalculado = base * (irpf / 100)
+    return base + ivaCalculado - irpfCalculado
 }
 
 fun generarNumeroFactura(): String {
-    val letras = (1..3)
-        .map { ('A'..'Z').random() }
-        .joinToString("")
-
+    val letras = (1..3).map { ('A'..'Z').random() }.joinToString("")
     val numeros = (100..999).random()
-
     return "$letras/$numeros"
 }
-
-
-
