@@ -67,6 +67,14 @@ fun PantallaLogin(navHostController: NavHostController) {
                         if (task.isSuccessful) {
                             // Inicio de sesión exitoso con Google
                             message.value = "Inicio de sesión con Google exitoso"
+
+                            // Guardar en SharedPreferences que el usuario ha iniciado sesión antes
+                            val sharedPref = context.getSharedPreferences("UserSession", Context.MODE_PRIVATE)
+                            with(sharedPref.edit()) {
+                                putBoolean("hasLoggedInBefore", true)
+                                apply()
+                            }
+
                             handlePostLogin(navHostController, context) // Redirige después del login
                         } else {
                             // Error en el inicio de sesión con Google
@@ -81,6 +89,7 @@ fun PantallaLogin(navHostController: NavHostController) {
             }
         }
     }
+
 
     // UI de la pantalla de inicio de sesión
     Column(
@@ -309,8 +318,8 @@ fun loginUser(
     }
 
     if (errorMessages.isNotEmpty()) {
-        message.value = errorMessages.joinToString("\n") // Une los errores con salto de línea
-        messageColor.value = Color.Red // Color rojo para errores
+        message.value = errorMessages.joinToString("\n")
+        messageColor.value = Color.Red
         return
     }
 
@@ -318,11 +327,23 @@ fun loginUser(
     auth.signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
         if (task.isSuccessful) {
             message.value = "Inicio de sesión exitoso"
-            messageColor.value = AzulPrincipal // Color azul para éxito
-            handlePostLogin(navHostController, context)
+            messageColor.value = AzulPrincipal
+
+            // Guardar que el usuario ya inició sesión antes en SharedPreferences
+            val sharedPref = context.getSharedPreferences("UserSession", Context.MODE_PRIVATE)
+            with(sharedPref.edit()) {
+                putBoolean("hasLoggedInBefore", true)
+                apply()
+            }
+
+            // Redirigir a la pantalla de autenticación biométrica
+            navHostController.navigate("pantallaAutenticacion") {
+                popUpTo("pantallaLogin") { inclusive = true }
+            }
         } else {
-            message.value = " Inicio de sesión erróneo. Verifica tus datos e inténtalo de nuevo."
+            message.value = "Inicio de sesión erróneo. Verifica tus datos e inténtalo de nuevo."
             messageColor.value = Color.Red
         }
     }
 }
+

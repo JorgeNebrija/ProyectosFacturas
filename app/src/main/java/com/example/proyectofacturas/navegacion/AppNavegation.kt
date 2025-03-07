@@ -1,6 +1,8 @@
 package com.example.proyectofacturas.navegacion
 
+import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -15,40 +17,53 @@ import com.example.proyectofacturas.vistas.PantallaEditarFactura
 import com.example.proyectofacturas.vistas.PantallaLogin
 import com.example.proyectofacturas.vistas.PantallaPerfil
 import com.example.proyectofacturas.vistas.PantallaRegistro
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun NavigationWrapper() {
+    val context = LocalContext.current
     val navController = rememberNavController()
-    val facturaViewModel: FacturaViewModel = viewModel() // Crear el ViewModel aquí
+    val facturaViewModel: FacturaViewModel = viewModel()
 
-    NavHost(navController = navController, startDestination = "pantallaLogin") {
+    // Obtener el estado de la sesión desde SharedPreferences
+    val sharedPref = context.getSharedPreferences("UserSession", Context.MODE_PRIVATE)
+    val hasLoggedInBefore = sharedPref.getBoolean("hasLoggedInBefore", false)
+
+    // Verificar si el usuario está autenticado en FirebaseAuth
+    val auth = FirebaseAuth.getInstance()
+    val currentUser = auth.currentUser
+
+    // Lógica para definir la pantalla de inicio:
+    // - Si el usuario ha iniciado sesión previamente y sigue autenticado, ir a biometría.
+    // - Si no ha iniciado sesión antes, ir a pantallaLogin.
+    val startDestination = if (hasLoggedInBefore && currentUser != null) {
+        "pantallaAutenticacion"
+    } else {
+        "pantallaLogin"
+    }
+
+    NavHost(navController = navController, startDestination = startDestination) {
 
         composable("pantallaLogin") { PantallaLogin(navController) }
 
-        composable("pantallaRegistro") { PantallaRegistro(navController) } // Nueva pantalla de registro
+        composable("pantallaRegistro") { PantallaRegistro(navController) }
 
         composable("pantallaAutenticacion") { PantallaAutenticacionBiometrica(navController) }
 
+        composable("facturas") { PantallaFacturas(navController, facturaViewModel) }
 
-        composable("facturas") {
-            PantallaFacturas(navController, facturaViewModel) // Pasar el ViewModel
-        }
-        composable("crear_factura") {
-            PantallaCrearFactura(navController, facturaViewModel) // Pasar el ViewModel
-        }
+        composable("crear_factura") { PantallaCrearFactura(navController, facturaViewModel) }
+
         composable("detalle_factura/{facturaId}") { backStackEntry ->
             val facturaId = backStackEntry.arguments?.getString("facturaId") ?: ""
-            PantallaDetalleFactura(navController, facturaId, facturaViewModel) // Pasar el ID
+            PantallaDetalleFactura(navController, facturaId, facturaViewModel)
         }
-        composable("perfil") {
-            PantallaPerfil(navController, facturaViewModel) // Pasar el ViewModel
-        }
+
+        composable("perfil") { PantallaPerfil(navController, facturaViewModel) }
+
         composable("editar_factura/{id}") { backStackEntry ->
             val id = backStackEntry.arguments?.getString("id") ?: ""
             PantallaEditarFactura(navController, id, facturaViewModel)
         }
-
-
     }
 }
-

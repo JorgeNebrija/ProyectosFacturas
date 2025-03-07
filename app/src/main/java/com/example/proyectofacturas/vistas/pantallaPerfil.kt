@@ -1,5 +1,6 @@
 package com.example.proyectofacturas.vistas
 
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -25,6 +26,8 @@ import com.example.proyectofacturas.ui.theme.AzulPrincipal
 import com.example.proyectofacturas.ui.theme.Blanco
 import com.example.proyectofacturas.ui.theme.colorDeFondo
 import com.example.proyectofacturas.viewmodels.FacturaViewModel
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -103,29 +106,34 @@ fun PantallaPerfil(navController: NavHostController, facturaViewModel: FacturaVi
         )
     }
     // Diálogo de Políticas de Privacidad
-    if (showPrivacyDialog) {
+    if (showLogoutDialog) {
         AlertDialog(
-            onDismissRequest = { showPrivacyDialog = false },
-            title = { Text(text = "Política de Privacidad", color = Color.Black) },
-            text = {
-                Column {
-                    Text(
-                        text = stringResource(id = R.string.politica_privacidad),
-                        color = Color.Black
-                    )
-                }
-            },
+            onDismissRequest = { showLogoutDialog = false },
+            title = { Text(text = "Cerrar Sesión", color = Color.Black) },
+            text = { Text("¿Estás seguro de que quieres cerrar sesión?", color = Color.Black) },
             confirmButton = {
                 Button(
-                    onClick = { showPrivacyDialog = false },
+                    onClick = {
+                        cerrarSesion(navController, navController.context)
+                        showLogoutDialog = false
+                    },
                     colors = ButtonDefaults.buttonColors(containerColor = AzulPrincipal)
                 ) {
-                    Text("Aceptar")
+                    Text("Cerrar sesión")
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = { showLogoutDialog = false },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
+                ) {
+                    Text("Cancelar")
                 }
             },
             containerColor = Blanco
         )
     }
+
     // AQUÍ se coloca el if para mostrar la alerta cuando showChangePasswordDialog sea true
     if (showChangePasswordDialog) {
         CambiarContrasenaDialog(onDismiss = { showChangePasswordDialog = false })
@@ -240,6 +248,37 @@ fun PantallaPerfil(navController: NavHostController, facturaViewModel: FacturaVi
         }
     }
 }
+
+fun cerrarSesion(navController: NavHostController, context: Context) {
+    val auth = FirebaseAuth.getInstance()
+
+    // Obtener el cliente de Google Sign-In
+    val googleSignInClient = GoogleSignIn.getClient(
+        context,
+        GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build()
+    )
+
+    // Cerrar sesión en Firebase
+    auth.signOut()
+
+    // Cerrar sesión en Google Sign-In
+    googleSignInClient.signOut().addOnCompleteListener {
+        googleSignInClient.revokeAccess().addOnCompleteListener {
+            // Eliminar SharedPreferences para que no vuelva a iniciar con biometría
+            val sharedPref = context.getSharedPreferences("UserSession", Context.MODE_PRIVATE)
+            with(sharedPref.edit()) {
+                putBoolean("hasLoggedInBefore", false)
+                apply()
+            }
+
+            // Redirigir a pantalla de inicio de sesión
+            navController.navigate("pantallaLogin") {
+                popUpTo("pantallaPerfil") { inclusive = true }
+            }
+        }
+    }
+}
+
 
 
 @Composable
