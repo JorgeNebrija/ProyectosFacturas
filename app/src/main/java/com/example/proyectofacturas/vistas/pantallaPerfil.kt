@@ -236,6 +236,12 @@ fun PantallaPerfil(navController: NavHostController, facturaViewModel: FacturaVi
                 showPrivacyDialog = true // Muestra la alerta en lugar de navegar
             }
 
+            // Opción de ver el video de introducción
+            PerfilOptionItem(icon = R.drawable.ic_video, text = "Ver Introducción") {
+                navController.navigate("pantallaVideo")
+            }
+
+
             PerfilOptionItem(icon = R.drawable.ic_configuraciones, text = "Cambiar Contraseña") {
                 showChangePasswordDialog = true
             }

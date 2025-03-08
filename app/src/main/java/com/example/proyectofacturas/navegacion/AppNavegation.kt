@@ -17,6 +17,7 @@ import com.example.proyectofacturas.vistas.PantallaEditarFactura
 import com.example.proyectofacturas.vistas.PantallaLogin
 import com.example.proyectofacturas.vistas.PantallaPerfil
 import com.example.proyectofacturas.vistas.PantallaRegistro
+import com.example.proyectofacturas.vistas.PantallaVideo
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
@@ -65,5 +66,7 @@ fun NavigationWrapper() {
             val id = backStackEntry.arguments?.getString("id") ?: ""
             PantallaEditarFactura(navController, id, facturaViewModel)
         }
+
+        composable("pantallaVideo") { PantallaVideo(navController) }
     }
 }
