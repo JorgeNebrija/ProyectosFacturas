@@ -14,8 +14,8 @@ import android.widget.VideoView
 
 @Composable
 fun PantallaVideo(navController: NavHostController) {
-    val context = LocalContext.current
-    val videoUri = Uri.parse("android.resource://${context.packageName}/raw/introduccion")
+    val context = LocalContext.current //VAriable para conseguri el entorno actual de la aplicacion , para acceder a recursos de la aplicacion
+    val videoUri = Uri.parse("android.resource://${context.packageName}/raw/introduccion") // es un identificador para encontrar ese recurso
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         Button(onClick = { navController.popBackStack() }) {
