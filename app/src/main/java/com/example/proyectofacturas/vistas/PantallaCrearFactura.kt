@@ -2,6 +2,7 @@ package com.example.proyectofacturas.vistas
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -88,7 +89,11 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
                         onClick = { tipoFactura = "Compra" },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = if (tipoFactura == "Compra") AzulPrincipal else Color.LightGray
-                        )
+                        ),
+                                shape = RoundedCornerShape(16.dp),
+                        elevation = ButtonDefaults.elevatedButtonElevation(4.dp),
+                        modifier = Modifier
+                            .height(40.dp)
                     ) {
                         Text("Compra", color = Color.White)
                     }
@@ -97,7 +102,11 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
                         onClick = { tipoFactura = "Venta" },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = if (tipoFactura == "Venta") AzulPrincipal else Color.LightGray
-                        )
+                        ),
+                        shape = RoundedCornerShape(16.dp),
+                        elevation = ButtonDefaults.elevatedButtonElevation(4.dp),
+                        modifier = Modifier
+                            .height(40.dp)
                     ) {
                         Text("Venta", color = Color.White)
                     }
