@@ -11,6 +11,7 @@ import androidx.navigation.NavHostController
 import androidx.compose.material3.*
 import androidx.compose.ui.unit.dp
 import android.widget.VideoView
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.graphics.Color
 
 @Composable
@@ -19,11 +20,21 @@ fun PantallaVideo(navController: NavHostController) {
     val videoUri = Uri.parse("android.resource://${context.packageName}/raw/introduccion")
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        Button(onClick = { navController.popBackStack() }) {
-            Text("Volver",
-                    modifier = Modifier.padding(16.dp),
-                color = Color.White)
+        Button(
+            onClick = { navController.popBackStack() },
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF5E81F4)), // Azul
+            shape = RoundedCornerShape(12.dp), // Bordes redondeados
+            modifier = Modifier
+                .padding(8.dp)
+                .height(40.dp) // Ajuste de altura
+        ) {
+            Text(
+                text = "Volver",
+                color = Color.White,
+                modifier = Modifier.padding(horizontal = 16.dp) // Espaciado interno
+            )
         }
+
 
 
 
