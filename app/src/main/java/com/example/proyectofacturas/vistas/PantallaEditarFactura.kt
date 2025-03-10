@@ -131,12 +131,15 @@ fun CampoSoloLectura(label: String, value: String, icon: ImageVector? = null) {
 
 
 @Composable
-fun CampoEditable(label: String, value: String, onValueChange: (String) -> Unit) {
+fun CampoEditable(label: String, value: String, icon: ImageVector? = null, onValueChange: (String) -> Unit) {
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
         label = { Text(label) },
-        modifier = Modifier.fillMaxWidth(),
+        leadingIcon = icon?.let { { Icon(it, contentDescription = null) } },
+        modifier = Modifier
+            .fillMaxWidth(),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
     )
 }
+
