@@ -5,17 +5,20 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.proyectofacturas.R
 import com.example.proyectofacturas.componentes.BottomNavigationBar
 import com.example.proyectofacturas.componentes.Header
 import com.example.proyectofacturas.modelos.Factura
@@ -102,25 +105,80 @@ fun ItemFactura(factura: Factura, navController: NavController) {
         factura.fecha
     }
 
+    // Color según tipo de factura
+    val colorTipo = when (factura.tipo.lowercase()) {
+        "compra" -> Color(0xFF6366F1) // Azul-Violeta para Compras
+        "venta" -> Color(0xFF10B981)  // Verde para Ventas
+        else -> Color.Gray
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 6.dp)
             .clickable { navController.navigate("detalle_factura/${factura.id}") },
-        colors = CardDefaults.cardColors(
-            containerColor = Blanco
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFF9FAFB)),
+        elevation = CardDefaults.cardElevation(2.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text("Factura N.º ${factura.numeroFactura}", fontWeight = FontWeight.Bold, fontSize = 18.sp)
-            Spacer(modifier = Modifier.height(4.dp))
-            Text("Fecha: $formattedDate", fontSize = 14.sp, color = Color.Gray)
-            Spacer(modifier = Modifier.height(4.dp))
-            Text("Total: ${factura.total} €", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = AzulPrincipal)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            // Icono
+            Icon(
+                painter = painterResource(id = R.drawable.ic_invoice), // Asegúrate de tener este icono
+                contentDescription = "Icono factura",
+                tint = colorTipo,
+                modifier = Modifier
+                    .size(36.dp)
+                    .background(colorTipo.copy(alpha = 0.1f), shape = RoundedCornerShape(8.dp))
+                    .padding(8.dp)
+            )
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            // Información principal
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = factura.numeroFactura,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp,
+                    color = Color(0xFF111827)
+                )
+                Text(
+                    text = formattedDate,
+                    fontSize = 13.sp,
+                    color = Color(0xFF6B7280)
+                )
+            }
+
+            // Total + Tipo de factura
+            Column(
+                horizontalAlignment = Alignment.End
+            ) {
+                Text(
+                    text = "${"%.2f".format(factura.total)} €",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp,
+                    color = Color(0xFF111827)
+                )
+                Text(
+                    text = factura.tipo.replaceFirstChar { it.uppercase() },
+                    fontSize = 13.sp,
+                    color = colorTipo,
+                    fontWeight = FontWeight.Medium
+                )
+            }
         }
     }
 }
+
 
 @Composable
 fun VistaFacturasVacias(navController: NavController) {
