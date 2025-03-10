@@ -1,5 +1,6 @@
 package com.example.proyectofacturas.vistas
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,6 +25,7 @@ import com.example.proyectofacturas.componentes.Header
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.ui.text.input.KeyboardType
+import com.example.proyectofacturas.ui.theme.colorDeFondo
 
 @Composable
 fun PantallaEditarFactura(
@@ -47,9 +49,10 @@ fun PantallaEditarFactura(
         ) { padding ->
             Column(
                 modifier = Modifier
+                    .fillMaxSize()
+                    .background(colorDeFondo)
                     .padding(padding)
-                    .padding(horizontal = 24.dp, vertical = 16.dp)
-                    .fillMaxSize(),
+                    .padding(horizontal = 24.dp, vertical = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Text(
@@ -163,16 +166,33 @@ fun CampoSoloLectura(label: String, value: String, icon: ImageVector? = null) {
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CampoEditable(label: String, value: String, icon: ImageVector? = null, onValueChange: (String) -> Unit) {
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        label = { Text(label) },
-        leadingIcon = icon?.let { { Icon(it, contentDescription = null) } },
-        modifier = Modifier
-            .fillMaxWidth(),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-    )
+fun CampoEditable(
+    label: String,
+    value: String,
+    icon: ImageVector? = null,
+    onValueChange: (String) -> Unit
+) {
+    Surface(
+        shape = RoundedCornerShape(10.dp),
+        color = Color.White,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        OutlinedTextField(
+            value = value,
+            onValueChange = onValueChange,
+            label = { Text(label) },
+            leadingIcon = icon?.let { { Icon(it, contentDescription = null) } },
+            modifier = Modifier.fillMaxWidth(),
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                containerColor = Color.White,
+                focusedBorderColor = AzulPrincipal,
+                unfocusedBorderColor = Color.LightGray
+            ),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+        )
+    }
 }
+
 
