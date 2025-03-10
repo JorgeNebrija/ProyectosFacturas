@@ -11,6 +11,7 @@ import androidx.navigation.NavHostController
 import androidx.compose.material3.*
 import androidx.compose.ui.unit.dp
 import android.widget.VideoView
+import androidx.compose.ui.graphics.Color
 
 @Composable
 fun PantallaVideo(navController: NavHostController) {
@@ -19,8 +20,12 @@ fun PantallaVideo(navController: NavHostController) {
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         Button(onClick = { navController.popBackStack() }) {
-            Text("Volver")
+            Text("Volver",
+                    modifier = Modifier.padding(16.dp),
+                color = Color.White)
         }
+
+
 
         Spacer(modifier = Modifier.height(16.dp))
 
