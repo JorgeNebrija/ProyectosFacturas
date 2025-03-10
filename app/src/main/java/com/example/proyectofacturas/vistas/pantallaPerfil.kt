@@ -106,28 +106,24 @@ fun PantallaPerfil(navController: NavHostController, facturaViewModel: FacturaVi
         )
     }
     // Diálogo de Políticas de Privacidad
-    if (showLogoutDialog) {
+    if (showPrivacyDialog) {
         AlertDialog(
-            onDismissRequest = { showLogoutDialog = false },
-            title = { Text(text = "Cerrar Sesión", color = Color.Black) },
-            text = { Text("¿Estás seguro de que quieres cerrar sesión?", color = Color.Black) },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        cerrarSesion(navController, navController.context)
-                        showLogoutDialog = false
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = AzulPrincipal)
-                ) {
-                    Text("Cerrar sesión")
+            onDismissRequest = { showPrivacyDialog = false },
+            title = { Text(text = "Política de Privacidad", color = Color.Black) },
+            text = {
+                Column {
+                    Text(
+                        text = stringResource(id = R.string.politica_privacidad),
+                        color = Color.Black
+                    )
                 }
             },
-            dismissButton = {
+            confirmButton = {
                 Button(
-                    onClick = { showLogoutDialog = false },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
+                    onClick = { showPrivacyDialog = false },
+                    colors = ButtonDefaults.buttonColors(containerColor = AzulPrincipal)
                 ) {
-                    Text("Cancelar")
+                    Text("Aceptar")
                 }
             },
             containerColor = Blanco
