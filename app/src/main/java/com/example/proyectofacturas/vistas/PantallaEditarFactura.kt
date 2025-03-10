@@ -11,7 +11,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.style.TextAlign
@@ -22,7 +21,10 @@ import com.example.proyectofacturas.viewmodels.FacturaViewModel
 import com.example.proyectofacturas.componentes.BottomNavigationBar
 import com.example.proyectofacturas.componentes.Header
 
-@OptIn(ExperimentalMaterial3Api::class)
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.ui.text.input.KeyboardType
+
 @Composable
 fun PantallaEditarFactura(
     navController: NavController,
@@ -61,19 +63,35 @@ fun PantallaEditarFactura(
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    item { CampoSoloLectura("Número de Factura", facturaData.numeroFactura) }
-                    item { CampoSoloLectura("Fecha", facturaData.fecha) }
-                    item { CampoSoloLectura("Nombre Empresa", facturaData.nombre) }
-                    item { CampoSoloLectura("Cliente", facturaData.cliente) }
-                    item { CampoSoloLectura("Dirección Emisor", facturaData.direccion) }
-                    item { CampoSoloLectura("Dirección Cliente", facturaData.direccionCliente) }
-                    item { CampoSoloLectura("CIF Emisor", facturaData.cif) }
-                    item { CampoSoloLectura("CIF Cliente", facturaData.cifCliente) }
+                    item { CampoSoloLectura("Número de Factura", facturaData.numeroFactura, Icons.Default.Description) }
+                    item { CampoSoloLectura("Fecha", facturaData.fecha, Icons.Default.DateRange) }
+                    item { CampoSoloLectura("Nombre Empresa", facturaData.nombre, Icons.Default.Business) }
+                    item { CampoSoloLectura("Cliente", facturaData.cliente, Icons.Default.Person) }
+                    item { CampoSoloLectura("Dirección Emisor", facturaData.direccion, Icons.Default.Home) }
+                    item { CampoSoloLectura("Dirección Cliente", facturaData.direccionCliente, Icons.Default.Home) }
+                    item { CampoSoloLectura("CIF Emisor", facturaData.cif, Icons.Default.Badge) }
+                    item { CampoSoloLectura("CIF Cliente", facturaData.cifCliente, Icons.Default.Badge) }
 
-                    item { CampoEditable("Base Imponible", baseImponible) { baseImponible = it } }
-                    item { CampoEditable("IVA", iva) { iva = it } }
-                    item { CampoEditable("IRPF", irpf) { irpf = it } }
-                    item { CampoEditable("Total", total) { total = it } }
+                    item {
+                        CampoEditable("Base Imponible", baseImponible, Icons.Default.AttachMoney) {
+                            baseImponible = it
+                        }
+                    }
+                    item {
+                        CampoEditable("IVA", iva, Icons.Default.Percent) {
+                            iva = it
+                        }
+                    }
+                    item {
+                        CampoEditable("IRPF", irpf, Icons.Default.Percent) {
+                            irpf = it
+                        }
+                    }
+                    item {
+                        CampoEditable("Total", total, Icons.Default.Money) {
+                            total = it
+                        }
+                    }
 
                     item {
                         Button(
@@ -120,6 +138,7 @@ fun PantallaEditarFactura(
         }
     }
 }
+
 
 
 @OptIn(ExperimentalMaterial3Api::class)

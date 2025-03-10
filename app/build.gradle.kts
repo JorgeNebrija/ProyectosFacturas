@@ -68,6 +68,8 @@ dependencies {
     implementation("androidx.biometric:biometric:1.1.0")
     implementation ("androidx.appcompat:appcompat:1.7.0")
     implementation ("com.google.android.material:material:1.11.0")
+    implementation("androidx.compose.material:material-icons-extended:1.6.0")
+
 
 
 }
