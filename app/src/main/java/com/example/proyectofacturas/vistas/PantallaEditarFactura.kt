@@ -2,10 +2,12 @@ package com.example.proyectofacturas.vistas
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -44,16 +46,17 @@ fun PantallaEditarFactura(
             Column(
                 modifier = Modifier
                     .padding(padding)
-                    .padding(16.dp)
+                    .padding(horizontal = 24.dp, vertical = 16.dp)
                     .fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Text(
-                    "Editar Factura",
-                    style = MaterialTheme.typography.headlineMedium.copy(fontSize = 24.sp),
+                    text = "Editar Factura",
+                    style = MaterialTheme.typography.headlineMedium.copy(fontSize = 22.sp),
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth()
                 )
+
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                     modifier = Modifier.fillMaxSize()
@@ -66,10 +69,12 @@ fun PantallaEditarFactura(
                     item { CampoSoloLectura("Dirección Cliente", facturaData.direccionCliente) }
                     item { CampoSoloLectura("CIF Emisor", facturaData.cif) }
                     item { CampoSoloLectura("CIF Cliente", facturaData.cifCliente) }
+
                     item { CampoEditable("Base Imponible", baseImponible) { baseImponible = it } }
                     item { CampoEditable("IVA", iva) { iva = it } }
                     item { CampoEditable("IRPF", irpf) { irpf = it } }
                     item { CampoEditable("Total", total) { total = it } }
+
                     item {
                         Button(
                             onClick = {
@@ -95,18 +100,27 @@ fun PantallaEditarFactura(
                                 }
                             },
                             colors = ButtonDefaults.buttonColors(containerColor = AzulPrincipal),
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(50.dp),
+                            shape = RoundedCornerShape(10.dp)
                         ) {
-                            Text("Guardar cambios", color = Color.White)
+                            Text("Guardar cambios", fontSize = 16.sp, color = Color.White)
                         }
                     }
                 }
             }
         }
     } else {
-        Text("Cargando factura...", color = Color.Gray, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Text("Cargando factura...", color = Color.Gray)
+        }
     }
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -120,12 +134,12 @@ fun CampoSoloLectura(label: String, value: String, icon: ImageVector? = null) {
         modifier = Modifier
             .fillMaxWidth(),
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            disabledTextColor = Color.Black,
+            disabledTextColor = Color.Gray,
             disabledBorderColor = Color.LightGray,
             disabledLabelColor = Color.Gray,
             disabledLeadingIconColor = Color.Gray
         ),
-        textStyle = LocalTextStyle.current.copy(color = Color.Black)
+        textStyle = LocalTextStyle.current.copy(color = Color.Gray)
     )
 }
 
