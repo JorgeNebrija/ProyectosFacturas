@@ -8,6 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -107,17 +108,27 @@ fun PantallaEditarFactura(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CampoSoloLectura(label: String, value: String) {
+fun CampoSoloLectura(label: String, value: String, icon: ImageVector? = null) {
     OutlinedTextField(
         value = value,
         onValueChange = {},
         label = { Text(label) },
+        leadingIcon = icon?.let { { Icon(it, contentDescription = null) } },
         enabled = false,
-        modifier = Modifier.fillMaxWidth(),
-        textStyle = LocalTextStyle.current.copy(color = Color.Gray)
+        modifier = Modifier
+            .fillMaxWidth(),
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            disabledTextColor = Color.Black,
+            disabledBorderColor = Color.LightGray,
+            disabledLabelColor = Color.Gray,
+            disabledLeadingIconColor = Color.Gray
+        ),
+        textStyle = LocalTextStyle.current.copy(color = Color.Black)
     )
 }
+
 
 @Composable
 fun CampoEditable(label: String, value: String, onValueChange: (String) -> Unit) {
