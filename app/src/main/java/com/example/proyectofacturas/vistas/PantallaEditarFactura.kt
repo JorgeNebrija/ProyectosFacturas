@@ -10,6 +10,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
 import com.example.proyectofacturas.modelos.Factura
 import com.example.proyectofacturas.ui.theme.AzulPrincipal
@@ -29,73 +31,101 @@ fun PantallaEditarFactura(
     if (factura != null) {
         val facturaData = factura!!
 
-        var numeroFactura by remember { mutableStateOf(facturaData.numeroFactura) }
-        var fecha by remember { mutableStateOf(facturaData.fecha) }
-        var nombre by remember { mutableStateOf(facturaData.nombre) }
-        var cliente by remember { mutableStateOf(facturaData.cliente) }
-        var direccionEmisor by remember { mutableStateOf(facturaData.direccion) }
-        var direccionCliente by remember { mutableStateOf(facturaData.direccionCliente) }
-        var cifEmisor by remember { mutableStateOf(facturaData.cif) }
-        var cifCliente by remember { mutableStateOf(facturaData.cifCliente) }
         var baseImponible by remember { mutableStateOf(facturaData.baseImponible.toString()) }
         var iva by remember { mutableStateOf(facturaData.iva.toString()) }
         var irpf by remember { mutableStateOf(facturaData.irpf.toString()) }
         var total by remember { mutableStateOf(facturaData.total.toString()) }
-        var tipoFactura by remember { mutableStateOf(facturaData.tipo) }
 
         Scaffold(
             topBar = { Header(navController) },
             bottomBar = { BottomNavigationBar(navController = navController) }
         ) { padding ->
-            LazyColumn(
+            Column(
                 modifier = Modifier
                     .padding(padding)
                     .padding(16.dp)
                     .fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                item { Text("Editar Factura", style = MaterialTheme.typography.headlineMedium) }
-                item { InputDeDatos(value = numeroFactura, onValueChange = { numeroFactura = it }, label = "Número de Factura") }
-                item { InputDeDatos(value = fecha, onValueChange = { fecha = it }, label = "Fecha", enabled = false) }
-                item { InputDeDatos(value = nombre, onValueChange = { nombre = it }, label = "Nombre Empresa") }
-                item { InputDeDatos(value = cliente, onValueChange = { cliente = it }, label = "Cliente") }
-                item { InputDeDatos(value = direccionEmisor, onValueChange = { direccionEmisor = it }, label = "Dirección Emisor") }
-                item { InputDeDatos(value = direccionCliente, onValueChange = { direccionCliente = it }, label = "Dirección Cliente") }
-                item { InputDeDatos(value = cifEmisor, onValueChange = { cifEmisor = it }, label = "CIF Emisor") }
-                item { InputDeDatos(value = cifCliente, onValueChange = { cifCliente = it }, label = "CIF Cliente") }
-                item {
-                    Button(
-                        onClick = {
-                            factura?.id?.let { facturaId ->
-                                val facturaActualizada = Factura(
-                                    id = facturaId, // ✅ Usamos el ID correcto de la factura existente
-                                    numeroFactura = numeroFactura,
-                                    fecha = fecha,
-                                    nombre = nombre,
-                                    direccion = direccionEmisor,
-                                    cliente = cliente,
-                                    direccionCliente = direccionCliente,
-                                    cif = cifEmisor,
-                                    cifCliente = cifCliente,
-                                    baseImponible = baseImponible.toDoubleOrNull() ?: 0.0,
-                                    iva = iva.toDoubleOrNull() ?: 0.0,
-                                    irpf = irpf.toDoubleOrNull() ?: 0.0,
-                                    total = total.toDoubleOrNull() ?: 0.0,
-                                    tipo = tipoFactura
-                                )
-                                viewModel.actualizarFactura(facturaId, facturaActualizada) // ✅ Ahora usa un ID válido
-                                navController.popBackStack()
-                            }
-                        },
-                        colors = ButtonDefaults.buttonColors(containerColor = AzulPrincipal),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text("Guardar cambios", color = Color.White)
+                Text(
+                    "Editar Factura",
+                    style = MaterialTheme.typography.headlineMedium.copy(fontSize = 24.sp),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    item { CampoSoloLectura("Número de Factura", facturaData.numeroFactura) }
+                    item { CampoSoloLectura("Fecha", facturaData.fecha) }
+                    item { CampoSoloLectura("Nombre Empresa", facturaData.nombre) }
+                    item { CampoSoloLectura("Cliente", facturaData.cliente) }
+                    item { CampoSoloLectura("Dirección Emisor", facturaData.direccion) }
+                    item { CampoSoloLectura("Dirección Cliente", facturaData.direccionCliente) }
+                    item { CampoSoloLectura("CIF Emisor", facturaData.cif) }
+                    item { CampoSoloLectura("CIF Cliente", facturaData.cifCliente) }
+                    item { CampoEditable("Base Imponible", baseImponible) { baseImponible = it } }
+                    item { CampoEditable("IVA", iva) { iva = it } }
+                    item { CampoEditable("IRPF", irpf) { irpf = it } }
+                    item { CampoEditable("Total", total) { total = it } }
+                    item {
+                        Button(
+                            onClick = {
+                                factura?.id?.let { facturaId ->
+                                    val facturaActualizada = Factura(
+                                        id = facturaId,
+                                        numeroFactura = facturaData.numeroFactura,
+                                        fecha = facturaData.fecha,
+                                        nombre = facturaData.nombre,
+                                        direccion = facturaData.direccion,
+                                        cliente = facturaData.cliente,
+                                        direccionCliente = facturaData.direccionCliente,
+                                        cif = facturaData.cif,
+                                        cifCliente = facturaData.cifCliente,
+                                        baseImponible = baseImponible.toDoubleOrNull() ?: 0.0,
+                                        iva = iva.toDoubleOrNull() ?: 0.0,
+                                        irpf = irpf.toDoubleOrNull() ?: 0.0,
+                                        total = total.toDoubleOrNull() ?: 0.0,
+                                        tipo = facturaData.tipo
+                                    )
+                                    viewModel.actualizarFactura(facturaId, facturaActualizada)
+                                    navController.popBackStack()
+                                }
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = AzulPrincipal),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text("Guardar cambios", color = Color.White)
+                        }
                     }
                 }
             }
         }
     } else {
-        Text("Cargando factura...", color = Color.Gray)
+        Text("Cargando factura...", color = Color.Gray, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
     }
+}
+
+@Composable
+fun CampoSoloLectura(label: String, value: String) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = {},
+        label = { Text(label) },
+        enabled = false,
+        modifier = Modifier.fillMaxWidth(),
+        textStyle = LocalTextStyle.current.copy(color = Color.Gray)
+    )
+}
+
+@Composable
+fun CampoEditable(label: String, value: String, onValueChange: (String) -> Unit) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = { Text(label) },
+        modifier = Modifier.fillMaxWidth(),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+    )
 }
