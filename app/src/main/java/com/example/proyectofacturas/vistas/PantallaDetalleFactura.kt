@@ -9,6 +9,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
+import android.content.Context
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -65,131 +66,144 @@ fun DetalleFactura(
     factura: Factura,
     navController: NavHostController,
     facturaViewModel: FacturaViewModel,
-    context: android.content.Context
+    context: Context
 ) {
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        item {
-            SeccionDetalle("Detalles de la Factura N.º: ${factura.numeroFactura}") {
-                Text("Fecha de emisión: ${factura.fecha}")
-            }
-        }
+    val fondo = Color(0xFFF6F7FB)
 
-        item {
-            Text(
-                "Datos de la Factura",
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp,
-                modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
-                color = Color.Black
-            )
-        }
-
-        item {
-            Row(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                LazyColumn(
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(150.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(Color.White)
-                        .padding(16.dp)
+    Scaffold(
+        bottomBar = { BottomNavigationBar(navController) },
+        containerColor = fondo
+    ) { padding ->
+        LazyColumn(
+            modifier = Modifier
+                .padding(padding)
+                .padding(16.dp)
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            // Cabecera con empresa y fecha
+            item {
+                Surface(
+                    color = Color.White,
+                    shape = RoundedCornerShape(12.dp),
+                    shadowElevation = 4.dp,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    item {
-                        Text("Datos del Emisor", fontWeight = FontWeight.Bold, color = colorTitulo)
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text("Empresa: ${factura.nombre}")
-                        Text("NIF: ${factura.cif}")
-                        Text("Dirección: ${factura.direccion}")
-                    }
-                }
-
-                Spacer(modifier = Modifier.width(16.dp))
-
-                LazyColumn(
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(150.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(Color.White)
-                        .padding(16.dp)
-                ) {
-                    item {
-                        Text("Datos del Receptor", fontWeight = FontWeight.Bold, color = colorTitulo)
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text("Cliente: ${factura.cliente}")
-                        Text("NIF: ${factura.cifCliente}")
-                        Text("Dirección: ${factura.direccionCliente}")
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(
+                            text = factura.nombre,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = factura.fecha,
+                            color = Color.Gray,
+                            style = MaterialTheme.typography.bodySmall
+                        )
                     }
                 }
             }
-        }
 
-        item {
-            SeccionDetalle("Importes de la Factura") {
-                Text("Base imponible: ${factura.baseImponible}€")
-                Text("IVA: ${factura.iva}%")
-                Spacer(modifier = Modifier.height(8.dp))
-                Text("Total: ${factura.total}€", fontWeight = FontWeight.Bold)
-            }
-        }
-
-        item {
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-
-        item {
-            // Botones de Editar y Eliminar
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                Button(
-                    onClick = {
-                        navController.navigate("editar_factura/${factura.id}")
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = AzulPrincipal)
-                ) {
-                    Text("Editar", color = Color.White)
+            // Datos del Emisor y Receptor
+            item {
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    DetalleTarjeta("Datos del Emisor", listOf(
+                        "Empresa: ${factura.nombre}",
+                        "NIF: ${factura.cif}",
+                        "Dirección: ${factura.direccion}"
+                    ))
+                    DetalleTarjeta("Datos del Receptor", listOf(
+                        "Cliente: ${factura.cliente}",
+                        "NIF: ${factura.cifCliente}",
+                        "Dirección: ${factura.direccionCliente}"
+                    ))
                 }
+            }
 
-                Button(
-                    onClick = {
-                        factura.id?.let { facturaViewModel.eliminarFactura(it) }
-                        Toast.makeText(context, "Factura eliminada", Toast.LENGTH_SHORT).show()
-                        navController.popBackStack()
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+            // Desglose de importes
+            item {
+                Surface(
+                    color = Color.White,
+                    shape = RoundedCornerShape(12.dp),
+                    shadowElevation = 4.dp,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Borrar", color = Color.White)
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text("Importes de la Factura", fontWeight = FontWeight.Bold)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text("Base Imponible: ${factura.baseImponible}€")
+                        Text("IVA: ${factura.iva}%")
+                        Text("IRPF: ${factura.irpf}%")
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Divider()
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            "Total: ${factura.total}€",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp
+                        )
+                    }
+                }
+            }
+
+            // Botones
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    Button(
+                        onClick = {
+                            navController.navigate("editar_factura/${factura.id}")
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = AzulPrincipal),
+                        shape = RoundedCornerShape(10.dp),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("Editar", color = Color.White)
+                    }
+
+                    Spacer(modifier = Modifier.width(12.dp))
+
+                    Button(
+                        onClick = {
+                            factura.id?.let { facturaViewModel.eliminarFactura(it) }
+                            Toast.makeText(context, "Factura eliminada", Toast.LENGTH_SHORT).show()
+                            navController.popBackStack()
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+                        shape = RoundedCornerShape(10.dp),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("Borrar", color = Color.White)
+                    }
                 }
             }
         }
     }
 }
-
 
 @Composable
-fun SeccionDetalle(titulo: String, contenido: @Composable ColumnScope.() -> Unit) {
-    Text(
-        text = titulo,
-        fontWeight = FontWeight.Bold,
-        fontSize = 16.sp,
-        modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
-        color = Color.Black
-    )
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(8.dp))
-            .background(Color.White)
-            .padding(16.dp)
+fun DetalleTarjeta(titulo: String, lineas: List<String>, modifier: Modifier = Modifier) {
+    Surface(
+        color = Color.White,
+        shape = RoundedCornerShape(12.dp),
+        shadowElevation = 4.dp,
+        modifier = modifier
     ) {
-        contenido()
+        Column(modifier = Modifier.padding(12.dp)) {
+            Text(
+                text = titulo,
+                fontWeight = FontWeight.Bold,
+                color = AzulPrincipal,
+                fontSize = 14.sp
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            lineas.forEach {
+                Text(text = it, fontSize = 14.sp)
+            }
+        }
     }
 }
+
