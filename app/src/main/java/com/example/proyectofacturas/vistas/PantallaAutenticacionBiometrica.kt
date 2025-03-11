@@ -5,7 +5,6 @@ import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,11 +14,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import com.example.proyectofacturas.R
-import com.example.proyectofacturas.componentes.AutenticacionBiometrica
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
+import androidx.navigation.NavController
+import com.example.proyectofacturas.R
 import java.util.concurrent.Executor
 
 @Composable
@@ -27,6 +25,9 @@ fun PantallaAutenticacionBiometrica(navController: NavController) {
     val contexto = LocalContext.current
     var mensajeAutenticacion by remember { mutableStateOf("") }
     var autenticando by remember { mutableStateOf(false) }
+
+    val sharedPref = contexto.getSharedPreferences("UserSession", Context.MODE_PRIVATE)
+    val hasLoggedInBefore = sharedPref.getBoolean("hasLoggedInBefore", false)
 
     val executor: Executor = ContextCompat.getMainExecutor(contexto)
 
@@ -50,12 +51,15 @@ fun PantallaAutenticacionBiometrica(navController: NavController) {
     val promptInfo = BiometricPrompt.PromptInfo.Builder()
         .setTitle("Bienvenido de nuevo!")
         .setSubtitle("Inicio de sesión rápido y seguro")
-        .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
+        .setAllowedAuthenticators(
+            BiometricManager.Authenticators.BIOMETRIC_STRONG or
+                    BiometricManager.Authenticators.DEVICE_CREDENTIAL
+        )
         .build()
 
-    // Iniciar la autenticación automáticamente
+    // Iniciar la autenticación automáticamente solo si ya ha hecho login antes
     LaunchedEffect(Unit) {
-        if (!autenticando) {
+        if (hasLoggedInBefore && !autenticando) {
             autenticando = true
             biometricPrompt.authenticate(promptInfo)
         }
@@ -102,7 +106,11 @@ fun PantallaAutenticacionBiometrica(navController: NavController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text("Iniciar sesión con usuario y contraseña", fontSize = 14.sp, fontWeight = FontWeight.Medium)
+        Text(
+            "Iniciar sesión con usuario y contraseña",
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Medium
+        )
 
         Spacer(modifier = Modifier.height(24.dp))
 
