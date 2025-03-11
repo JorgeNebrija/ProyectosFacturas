@@ -125,7 +125,14 @@ fun CampoSoloLectura(
         OutlinedTextField(
             value = value,
             onValueChange = {},
-            label = { Text(label) },
+            label = {
+                Text(
+                    text = label,
+                    color = Color.Gray,
+                    modifier = Modifier
+                        .background(FondoLabel)
+                )
+            },
             leadingIcon = icon?.let { { Icon(it, contentDescription = null, tint = AzulClaro) } },
             enabled = false,
             modifier = Modifier.fillMaxWidth(),
@@ -133,13 +140,15 @@ fun CampoSoloLectura(
                 disabledTextColor = Color.Black,
                 disabledBorderColor = Color.LightGray,
                 disabledLabelColor = Color.Gray,
-                disabledLeadingIconColor = AzulClaro, // También aquí por si el sistema lo toma
+                disabledLeadingIconColor = AzulClaro,
                 containerColor = Color.White
             ),
             textStyle = LocalTextStyle.current.copy(color = Color.Gray)
         )
     }
 }
+
+val FondoLabel = Color(0xFFF6F7FB)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -157,17 +166,27 @@ fun CampoEditable(
         OutlinedTextField(
             value = value,
             onValueChange = onValueChange,
-            label = { Text(label) },
+            label = {
+                Text(
+                    text = label,
+                    color = Color.Gray,
+                    modifier = Modifier
+                        .background(FondoLabel)
+                )
+            },
             leadingIcon = icon?.let { { Icon(it, contentDescription = null, tint = AzulPrincipal) } },
             modifier = Modifier.fillMaxWidth(),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 containerColor = Color.White,
                 focusedBorderColor = AzulPrincipal,
-                unfocusedBorderColor = Color.LightGray
+                unfocusedBorderColor = Color.LightGray,
+                focusedLabelColor = Color.Gray,
+                unfocusedLabelColor = Color.Gray
             ),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
     }
 }
+
 
 
