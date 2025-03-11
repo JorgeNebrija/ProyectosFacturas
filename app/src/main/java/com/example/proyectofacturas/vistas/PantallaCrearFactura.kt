@@ -4,11 +4,20 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AttachMoney
+import androidx.compose.material.icons.filled.Badge
+import androidx.compose.material.icons.filled.Business
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Money
+import androidx.compose.material.icons.filled.Percent
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -19,6 +28,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import com.example.proyectofacturas.componentes.BottomNavigationBar
 import com.example.proyectofacturas.componentes.Header
+import com.example.proyectofacturas.ui.theme.AzulClaro
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -26,23 +36,36 @@ fun InputDeDatos(
     value: String,
     onValueChange: (String) -> Unit,
     label: String,
+    icon: ImageVector? = null,
     enabled: Boolean = true,
-    keyboardType: KeyboardType = KeyboardType.Text,
+    keyboardType: KeyboardType = KeyboardType.Text
 ) {
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        label = { Text(label) },
-        enabled = enabled,
-        keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
-        modifier = Modifier.fillMaxWidth(),
-        colors = TextFieldDefaults.outlinedTextFieldColors(
-            containerColor = Color.White,
-            focusedBorderColor = Color.Transparent,
-            unfocusedBorderColor = Color.Transparent
+    Surface(
+        shape = RoundedCornerShape(10.dp),
+        color = Color.White,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        OutlinedTextField(
+            value = value,
+            onValueChange = onValueChange,
+            label = { Text(label) },
+            leadingIcon = icon?.let { { Icon(it, contentDescription = null, tint = if (enabled) AzulPrincipal else AzulClaro) } },
+            enabled = enabled,
+            modifier = Modifier.fillMaxWidth(),
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                containerColor = Color.White,
+                focusedBorderColor = AzulPrincipal,
+                unfocusedBorderColor = Color.LightGray,
+                disabledTextColor = Color.Gray,
+                disabledBorderColor = Color.LightGray,
+                disabledLabelColor = Color.Gray,
+                disabledLeadingIconColor = AzulClaro
+            ),
+            keyboardOptions = KeyboardOptions(keyboardType = keyboardType)
         )
-    )
+    }
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -162,30 +185,33 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
             when (tipoFactura) {
                 "Compra" -> {
                     item { Text("Datos del Proveedor:", style = MaterialTheme.typography.titleSmall) }
-                    item { InputDeDatos(nombre, {}, "Proveedor:", enabled = false) }
-                    item { InputDeDatos(cifEmisor, {}, "CIF/NIF del Proveedor", enabled = false) }
-                    item { InputDeDatos(direccionEmisor, {}, "Dirección del Proveedor", enabled = false) }
+                    item { InputDeDatos(nombre, {}, "Proveedor:", icon = Icons.Default.Business, enabled = false) }
+                    item { InputDeDatos(cifEmisor, {}, "CIF/NIF del Proveedor", icon = Icons.Default.Badge, enabled = false) }
+                    item { InputDeDatos(direccionEmisor, {}, "Dirección del Proveedor", icon = Icons.Default.Home, enabled = false) }
+
                     item { Text("Datos del Cliente:", style = MaterialTheme.typography.titleSmall) }
-                    item { InputDeDatos(cliente, {}, "Cliente:", enabled = false) }
-                    item { InputDeDatos(cifCliente, {}, "CIF/NIF del Cliente", enabled = false) }
-                    item { InputDeDatos(direccionCliente, {}, "Dirección del Cliente", enabled = false) }
+                    item { InputDeDatos(cliente, {}, "Cliente:", icon = Icons.Default.Person, enabled = false) }
+                    item { InputDeDatos(cifCliente, {}, "CIF/NIF del Cliente", icon = Icons.Default.Badge, enabled = false) }
+                    item { InputDeDatos(direccionCliente, {}, "Dirección del Cliente", icon = Icons.Default.Home, enabled = false) }
                 }
+
                 "Venta" -> {
                     item { Text("Datos del Cliente:", style = MaterialTheme.typography.titleSmall) }
-                    item { InputDeDatos(cliente, {}, "Cliente:", enabled = false) }
-                    item { InputDeDatos(cifCliente, {}, "CIF/NIF del Cliente", enabled = false) }
-                    item { InputDeDatos(direccionCliente, {}, "Dirección del Cliente", enabled = false) }
+                    item { InputDeDatos(cliente, {}, "Cliente:", icon = Icons.Default.Person, enabled = false) }
+                    item { InputDeDatos(cifCliente, {}, "CIF/NIF del Cliente", icon = Icons.Default.Badge, enabled = false) }
+                    item { InputDeDatos(direccionCliente, {}, "Dirección del Cliente", icon = Icons.Default.Home, enabled = false) }
+
                     item { Text("Datos del Proveedor:", style = MaterialTheme.typography.titleSmall) }
-                    item { InputDeDatos(nombre, {}, "Proveedor:", enabled = false) }
-                    item { InputDeDatos(cifEmisor, {}, "CIF/NIF del Proveedor", enabled = false) }
-                    item { InputDeDatos(direccionEmisor, {}, "Dirección del Proveedor", enabled = false) }
+                    item { InputDeDatos(nombre, {}, "Proveedor:", icon = Icons.Default.Business, enabled = false) }
+                    item { InputDeDatos(cifEmisor, {}, "CIF/NIF del Proveedor", icon = Icons.Default.Badge, enabled = false) }
+                    item { InputDeDatos(direccionEmisor, {}, "Dirección del Proveedor", icon = Icons.Default.Home, enabled = false) }
                 }
             }
 
             item { Text("Importes de la factura:", style = MaterialTheme.typography.titleSmall) }
-            item { InputDeDatos(baseImponible, { baseImponible = it }, "Base Imponible (€)", keyboardType = KeyboardType.Number) }
-            item { InputDeDatos(iva, { iva = it }, "IVA (%)", keyboardType = KeyboardType.Number) }
-            item { InputDeDatos(irpf, { irpf = it }, "IRPF (%)", keyboardType = KeyboardType.Number) }
+            item { InputDeDatos(baseImponible, { baseImponible = it }, "Base Imponible (€)", icon = Icons.Default.AttachMoney, keyboardType = KeyboardType.Number) }
+            item { InputDeDatos(iva, { iva = it }, "IVA (%)", icon = Icons.Default.Percent, keyboardType = KeyboardType.Number) }
+            item { InputDeDatos(irpf, { irpf = it }, "IRPF (%)", icon = Icons.Default.Percent, keyboardType = KeyboardType.Number) }
             item {
                 InputDeDatos(
                     value = "%.2f".format(
@@ -197,9 +223,11 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
                     ),
                     onValueChange = {},
                     label = "Total (€)",
+                    icon = Icons.Default.Money,
                     enabled = false
                 )
             }
+
 
             item {
                 Button(
