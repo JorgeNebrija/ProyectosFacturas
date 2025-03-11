@@ -50,7 +50,6 @@ fun PantallaAutenticacionBiometrica(navController: NavController) {
 
     val promptInfo = BiometricPrompt.PromptInfo.Builder()
         .setTitle("Bienvenido de nuevo!")
-        .setSubtitle("Inicio de sesión rápido y seguro")
         .setAllowedAuthenticators(
             BiometricManager.Authenticators.BIOMETRIC_STRONG or
                     BiometricManager.Authenticators.DEVICE_CREDENTIAL
