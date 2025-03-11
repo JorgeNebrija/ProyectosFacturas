@@ -21,14 +21,14 @@ Está orientada a profesionales o pequeñas empresas que deseen tener control so
 
 ## 🛠️ Tecnologías utilizadas
 
-| Tecnología       | Descripción                                             
-|------------------|----------------------------------------------------------
- **Kotlin**         Lenguaje principal de desarrollo                        
-**Jetpack Compose**  Framework moderno para construir interfaces de usuario 
-**Firebase Auth**   Login con cuentas de Google                            
-**Firebase Firestore**  Base de datos en tiempo real, escalable y en la nube     
-**SharedPreferences**  Almacenamiento local para control de autenticación biométrica 
-**MVVM**          Arquitectura que separa UI, lógica y datos              
+| Tecnología            | Descripción                                                  |
+|------------------------|--------------------------------------------------------------|
+| **Kotlin**             | Lenguaje principal del proyecto                              |
+| **Jetpack Compose**    | UI moderna y declarativa para Android                        |
+| **Firebase Auth**      | Autenticación de usuarios con Google                         |
+| **Firebase Firestore** | Base de datos NoSQL en tiempo real                           |
+| **SharedPreferences**  | Almacenamiento local de parámetros como autenticación biométrica |
+| **MVVM**               | Arquitectura que separa la lógica de negocio de la UI        |           
 
 ---
 
