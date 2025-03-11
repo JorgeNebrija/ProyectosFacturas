@@ -71,7 +71,6 @@ fun DetalleFactura(
     val fondo = Color(0xFFF6F7FB)
 
     Scaffold(
-        bottomBar = { BottomNavigationBar(navController) },
         containerColor = fondo
     ) { padding ->
         LazyColumn(
@@ -81,7 +80,7 @@ fun DetalleFactura(
                 .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Cabecera con empresa y fecha
+            // Cabecera con número de factura y fecha
             item {
                 Surface(
                     color = Color.White,
@@ -89,37 +88,59 @@ fun DetalleFactura(
                     shadowElevation = 4.dp,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
+                    Column(
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
                         Text(
-                            text = factura.nombre,
-                            style = MaterialTheme.typography.titleMedium,
+                            text = "Factura Nº: ${factura.numeroFactura}",
+                            style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = factura.fecha,
+                            text = "Fecha de emisión: ${factura.fecha}",
                             color = Color.Gray,
                             style = MaterialTheme.typography.bodySmall
                         )
                     }
                 }
             }
-
             // Datos del Emisor y Receptor
             item {
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    DetalleTarjeta("Datos del Emisor", listOf(
-                        "Empresa: ${factura.nombre}",
-                        "NIF: ${factura.cif}",
-                        "Dirección: ${factura.direccion}"
-                    ))
-                    DetalleTarjeta("Datos del Receptor", listOf(
-                        "Cliente: ${factura.cliente}",
-                        "NIF: ${factura.cifCliente}",
-                        "Dirección: ${factura.direccionCliente}"
-                    ))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(IntrinsicSize.Min), // Asegura que ambas tarjetas tengan misma altura si hay scroll
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    DetalleTarjeta(
+                        titulo = "Datos del Emisor",
+                        lineas = listOf(
+                            "Empresa: ${factura.nombre}",
+                            "NIF: ${factura.cif}",
+                            "Dirección: ${factura.direccion}"
+                        ),
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                    )
+                    DetalleTarjeta(
+                        titulo = "Datos del Receptor",
+                        lineas = listOf(
+                            "Cliente: ${factura.cliente}",
+                            "NIF: ${factura.cifCliente}",
+                            "Dirección: ${factura.direccionCliente}"
+                        ),
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                    )
                 }
             }
+
 
             // Desglose de importes
             item {
