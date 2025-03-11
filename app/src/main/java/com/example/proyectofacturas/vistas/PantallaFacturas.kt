@@ -1,12 +1,11 @@
 package com.example.proyectofacturas.vistas
 
-import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -34,7 +33,7 @@ import java.util.Locale
 @Composable
 fun PantallaFacturas(navController: NavController, viewModel: FacturaViewModel) {
     val facturas by viewModel.facturas.observeAsState(emptyList())
-    var filtroSeleccionado by remember { mutableStateOf("Todas") } // Estado para el filtro
+    var filtroSeleccionado by remember { mutableStateOf("Todas") }
 
     Scaffold(
         topBar = { Header(navController) },
@@ -46,21 +45,13 @@ fun PantallaFacturas(navController: NavController, viewModel: FacturaViewModel) 
                 .fillMaxSize()
                 .background(colorDeFondo)
         ) {
-            // Barra de filtros
             FiltrosFacturas(filtroSeleccionado) { filtroSeleccionado = it }
 
-            // Log para depuración
-            Log.d("PantallaFacturas", "Facturas totales (${facturas.size}): ${facturas.joinToString { it.tipo ?: "Sin tipo" }}")
-            Log.d("PantallaFacturas", "Filtro seleccionado: $filtroSeleccionado")
-
-            // Filtrar las facturas según el tipo seleccionado
             val facturasFiltradas = when (filtroSeleccionado) {
                 "Compras" -> facturas.filter { it.tipo?.trim()?.lowercase() == "compra" }
                 "Ventas" -> facturas.filter { it.tipo?.trim()?.lowercase() == "venta" }
-                else -> facturas // Mostrar todas
+                else -> facturas
             }
-
-            Log.d("PantallaFacturas", "Facturas filtradas (${facturasFiltradas.size}): ${facturasFiltradas.joinToString { it.tipo ?: "Sin tipo" }}")
 
             if (facturasFiltradas.isEmpty()) {
                 VistaFacturasVacias(navController)
@@ -71,72 +62,124 @@ fun PantallaFacturas(navController: NavController, viewModel: FacturaViewModel) 
     }
 }
 
-// Barra de filtros para elegir "Todas", "Compras" o "Ventas"
 @Composable
 fun FiltrosFacturas(filtroSeleccionado: String, onFiltroSeleccionado: (String) -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
-            .padding(top = 16.dp, bottom = 16.dp),
+            .padding(horizontal = 16.dp, vertical = 8.dp),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         listOf("Todas", "Compras", "Ventas").forEach { filtro ->
-            Button(
+            ElevatedButton(
                 onClick = { onFiltroSeleccionado(filtro) },
-                colors = ButtonDefaults.buttonColors(
+                colors = ButtonDefaults.elevatedButtonColors(
                     containerColor = if (filtro == filtroSeleccionado) AzulPrincipal else Color.LightGray
-                )
+                ),
+                shape = MaterialTheme.shapes.large,
+                elevation = ButtonDefaults.elevatedButtonElevation(defaultElevation = 6.dp)
             ) {
-                Text(filtro, color = Color.White)
+                Text(filtro, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 16.sp)
             }
         }
     }
 }
 
-//  Lista de facturas
 @Composable
 fun ListaFacturas(facturas: List<Factura>, navController: NavController) {
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
+    LazyColumn(modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp)) {
         items(facturas) { factura ->
             ItemFactura(factura, navController)
         }
     }
 }
 
-// Elemento de la lista de facturas
 @Composable
 fun ItemFactura(factura: Factura, navController: NavController) {
-    // Convertir la fecha al formato europeo
     val formattedDate = try {
-        val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) // Suponiendo que viene en este formato
-        val outputFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val outputFormat = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
         val date = inputFormat.parse(factura.fecha)
         date?.let { outputFormat.format(it) } ?: factura.fecha
     } catch (e: Exception) {
-        factura.fecha // Si hay error, mostrar la fecha original
+        factura.fecha
+    }
+
+    // Color según tipo de factura
+    val colorTipo = when (factura.tipo.lowercase()) {
+        "compra" -> Color(0xFF6366F1) // Azul-Violeta para Compras
+        "venta" -> Color(0xFF10B981)  // Verde para Ventas
+        else -> Color.Gray
     }
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
+            .padding(vertical = 6.dp)
             .clickable { navController.navigate("detalle_factura/${factura.id}") },
-        colors = CardDefaults.cardColors(
-            containerColor = Blanco
-        ),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFF9FAFB)),
+        elevation = CardDefaults.cardElevation(2.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text("Factura N.º ${factura.numeroFactura}", fontWeight = FontWeight.Bold, fontSize = 18.sp)
-            Spacer(modifier = Modifier.height(4.dp))
-            Text("Fecha: $formattedDate", fontSize = 14.sp) // Mostrar la fecha formateada
-            Spacer(modifier = Modifier.height(4.dp))
-            Text("Total: ${factura.total} €", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            // Icono
+            Icon(
+                painter = painterResource(id = R.drawable.ic_invoice), // Asegúrate de tener este icono
+                contentDescription = "Icono factura",
+                tint = colorTipo,
+                modifier = Modifier
+                    .size(36.dp)
+                    .background(colorTipo.copy(alpha = 0.1f), shape = RoundedCornerShape(8.dp))
+                    .padding(8.dp)
+            )
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            // Información principal
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = factura.numeroFactura,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp,
+                    color = Color(0xFF111827)
+                )
+                Text(
+                    text = formattedDate,
+                    fontSize = 13.sp,
+                    color = Color(0xFF6B7280)
+                )
+            }
+
+            // Total + Tipo de factura
+            Column(
+                horizontalAlignment = Alignment.End
+            ) {
+                Text(
+                    text = "${"%.2f".format(factura.total)} €",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp,
+                    color = Color(0xFF111827)
+                )
+                Text(
+                    text = factura.tipo.replaceFirstChar { it.uppercase() },
+                    fontSize = 13.sp,
+                    color = colorTipo,
+                    fontWeight = FontWeight.Medium
+                )
+            }
         }
     }
 }
 
-// Vista cuando no hay facturas
+
 @Composable
 fun VistaFacturasVacias(navController: NavController) {
     Column(
@@ -144,12 +187,6 @@ fun VistaFacturasVacias(navController: NavController) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.image_facturas_vacias),
-            contentDescription = "No hay facturas",
-            modifier = Modifier.size(200.dp)
-        )
-        Spacer(modifier = Modifier.height(16.dp))
         Text(
             "No hay facturas registradas",
             fontSize = 18.sp,
@@ -166,7 +203,8 @@ fun VistaFacturasVacias(navController: NavController) {
         Spacer(modifier = Modifier.height(16.dp))
         Button(
             onClick = { navController.navigate("crear_factura") },
-            colors = ButtonDefaults.buttonColors(containerColor = AzulPrincipal)
+            colors = ButtonDefaults.buttonColors(containerColor = AzulPrincipal),
+            shape = MaterialTheme.shapes.medium
         ) {
             Text("Crear Factura", color = Color.White)
         }

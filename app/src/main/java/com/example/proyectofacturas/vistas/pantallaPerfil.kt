@@ -1,11 +1,14 @@
 package com.example.proyectofacturas.vistas
 
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -25,6 +28,8 @@ import com.example.proyectofacturas.ui.theme.AzulPrincipal
 import com.example.proyectofacturas.ui.theme.Blanco
 import com.example.proyectofacturas.ui.theme.colorDeFondo
 import com.example.proyectofacturas.viewmodels.FacturaViewModel
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -41,7 +46,6 @@ fun PantallaPerfil(navController: NavHostController, facturaViewModel: FacturaVi
     var showLogoutDialog by remember { mutableStateOf(false) } // Estado para la alerta de cerrar sesión
     var showPrivacyDialog by remember { mutableStateOf(false) } // Estado para la alerta de Políticas de Privacidad
     var showChangePasswordDialog by remember { mutableStateOf(false) }
-
 
 
     // Diálogo de información personal
@@ -126,6 +130,7 @@ fun PantallaPerfil(navController: NavHostController, facturaViewModel: FacturaVi
             containerColor = Blanco
         )
     }
+
     // AQUÍ se coloca el if para mostrar la alerta cuando showChangePasswordDialog sea true
     if (showChangePasswordDialog) {
         CambiarContrasenaDialog(onDismiss = { showChangePasswordDialog = false })
@@ -156,6 +161,7 @@ fun PantallaPerfil(navController: NavHostController, facturaViewModel: FacturaVi
             .fillMaxSize()
             .background(colorDeFondo)
     ) {
+        // Botón de volver arriba
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
@@ -172,77 +178,87 @@ fun PantallaPerfil(navController: NavHostController, facturaViewModel: FacturaVi
             }
         }
 
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxWidth()
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(),
+            contentAlignment = Alignment.Center
         ) {
-            Box(contentAlignment = Alignment.BottomEnd) {
-                Image(
-                    painter = painterResource(id = R.drawable.image_facturas_vacias),
-                    contentDescription = "Foto de perfil",
-                    modifier = Modifier
-                        .size(120.dp)
-                        .background(
-                            brush = Brush.horizontalGradient(
-                                colors = listOf(Color.Gray, Color.LightGray)
-                            ),
-                            shape = CircleShape
-                        )
-                )
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_perfil),
-                    contentDescription = "Editar foto",
-                    tint = Color(0xFF5E81F4),
-                    modifier = Modifier
-                        .size(24.dp)
-                        .background(Color.White, shape = CircleShape)
-                        .padding(4.dp)
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Box(contentAlignment = Alignment.BottomEnd) {
+                    Image(
+                        painter = painterResource(id = R.drawable.image_facturas_vacias),
+                        contentDescription = "Foto de perfil",
+                        modifier = Modifier
+                            .size(120.dp)
+                            .background(
+                                brush = Brush.horizontalGradient(
+                                    colors = listOf(Color.Gray, Color.LightGray)
+                                ),
+                                shape = CircleShape
+                            )
+                    )
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_perfil),
+                        contentDescription = "Editar foto",
+                        tint = Color(0xFF5E81F4),
+                        modifier = Modifier
+                            .size(24.dp)
+                            .background(Color.White, shape = CircleShape)
+                            .padding(4.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = userName,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
                 )
             }
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = userName,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
-            )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
         Column(
             modifier = Modifier
-                .padding(20.dp)
-                .weight(1f)
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            PerfilOptionItem(icon = R.drawable.ic_informacion, text = "Información Personal") {
-                showDialog = true
-            }
+            Column(
+                modifier = Modifier.padding(20.dp)
+            ) {
+                PerfilOptionItem(icon = R.drawable.ic_informacion, text = "Información Personal") {
+                    showDialog = true
+                }
 
-            PerfilOptionItem(icon = R.drawable.ic_factura, text = "Facturas") {
-                navController.navigate("facturas")
-            }
+                PerfilOptionItem(icon = R.drawable.ic_factura, text = "Facturas") {
+                    navController.navigate("facturas")
+                }
 
-            // Opción de Políticas de Privacidad con alerta
-            PerfilOptionItem(icon = R.drawable.ic_politica, text = "Política de privacidad") {
-                showPrivacyDialog = true // Muestra la alerta en lugar de navegar
-            }
+                PerfilOptionItem(icon = R.drawable.ic_politica, text = "Política de privacidad") {
+                    showPrivacyDialog = true
+                }
 
-            PerfilOptionItem(icon = R.drawable.ic_configuraciones, text = "Cambiar Contraseña") {
-                showChangePasswordDialog = true
-            }
+                PerfilOptionItem(icon = R.drawable.ic_video, text = "Ver Introducción") {
+                    navController.navigate("pantallaVideo")
+                }
 
+                PerfilOptionItem(
+                    icon = R.drawable.ic_configuraciones,
+                    text = "Cambiar Contraseña"
+                ) {
+                    showChangePasswordDialog = true
+                }
 
-            // Opción de cerrar sesión con diálogo de confirmación
-            PerfilOptionItem(icon = R.drawable.ic_cerrar, text = "Cerrar sesión") {
-                showLogoutDialog = true
+                PerfilOptionItem(icon = R.drawable.ic_cerrar, text = "Cerrar sesión") {
+                    showLogoutDialog = true
+                }
             }
         }
     }
 }
-
-
-@Composable
+    @Composable
 fun PerfilOptionItem(icon: Int, text: String, onClick: () -> Unit) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
