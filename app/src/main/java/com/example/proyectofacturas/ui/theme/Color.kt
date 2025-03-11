@@ -13,3 +13,4 @@ val NaranjaPendiente = Color(0xFFFFA726) // Color para estados pendientes
 val RojoRetenido = Color(0xFFEF5350)     // Color para facturas en espera
 val colorTitulo = Color(0xFF8181A5)
 val colorDeFondo = Color(0xFFEBEBEB)
+val AzulClaro = Color(0xC196ABF6) //
