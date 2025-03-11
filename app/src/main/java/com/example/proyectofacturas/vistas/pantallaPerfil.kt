@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -46,6 +47,7 @@ fun PantallaPerfil(navController: NavHostController, facturaViewModel: FacturaVi
     var showLogoutDialog by remember { mutableStateOf(false) } // Estado para la alerta de cerrar sesión
     var showPrivacyDialog by remember { mutableStateOf(false) } // Estado para la alerta de Políticas de Privacidad
     var showChangePasswordDialog by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
 
     // Diálogo de información personal
@@ -84,10 +86,21 @@ fun PantallaPerfil(navController: NavHostController, facturaViewModel: FacturaVi
             confirmButton = {
                 Button(
                     onClick = {
+                        // Cerrar sesión en Firebase
                         FirebaseAuth.getInstance().signOut()
+
+                        // Borrar SharedPreferences de sesión
+                        val sharedPref = context.getSharedPreferences("UserSession", Context.MODE_PRIVATE)
+                        with(sharedPref.edit()) {
+                            clear()
+                            apply()
+                        }
+
+                        // Navegar al login
                         navController.navigate("pantallaLogin") {
                             popUpTo("pantallaPerfil") { inclusive = true }
                         }
+
                         showLogoutDialog = false
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = AzulPrincipal)
@@ -106,6 +119,7 @@ fun PantallaPerfil(navController: NavHostController, facturaViewModel: FacturaVi
             containerColor = Blanco
         )
     }
+
     // Diálogo de Políticas de Privacidad
     if (showPrivacyDialog) {
         AlertDialog(
