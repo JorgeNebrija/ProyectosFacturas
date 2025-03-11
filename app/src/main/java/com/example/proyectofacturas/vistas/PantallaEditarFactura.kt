@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -12,21 +14,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
-import com.example.proyectofacturas.modelos.Factura
-import com.example.proyectofacturas.ui.theme.AzulPrincipal
-import com.example.proyectofacturas.viewmodels.FacturaViewModel
 import com.example.proyectofacturas.componentes.BottomNavigationBar
 import com.example.proyectofacturas.componentes.Header
-
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.ui.text.input.KeyboardType
+import com.example.proyectofacturas.modelos.Factura
 import com.example.proyectofacturas.ui.theme.AzulClaro
-import com.example.proyectofacturas.ui.theme.colorDeFondo
+import com.example.proyectofacturas.ui.theme.AzulPrincipal
+import com.example.proyectofacturas.ui.theme.NegroSuave
+import com.example.proyectofacturas.viewmodels.FacturaViewModel
 
 @Composable
 fun PantallaEditarFactura(
@@ -56,14 +55,29 @@ fun PantallaEditarFactura(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 item {
-                    Text(
-                        "Editar Factura",
-                        style = MaterialTheme.typography.titleLarge,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        IconButton(onClick = { navController.popBackStack() }) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = "Volver",
+                                tint = NegroSuave
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Editar Factura",
+                            style = MaterialTheme.typography.titleLarge,
+                            color = Color.Black
+                        )
+                    }
                 }
 
+                // CAMPOS SOLO LECTURA
                 item { CampoSoloLectura("Número de Factura", facturaData.numeroFactura, Icons.Default.Description) }
                 item { CampoSoloLectura("Fecha", facturaData.fecha, Icons.Default.DateRange) }
                 item { CampoSoloLectura("Nombre Empresa", facturaData.nombre, Icons.Default.Business) }
@@ -73,12 +87,19 @@ fun PantallaEditarFactura(
                 item { CampoSoloLectura("CIF Emisor", facturaData.cif, Icons.Default.Badge) }
                 item { CampoSoloLectura("CIF Cliente", facturaData.cifCliente, Icons.Default.Badge) }
 
-                item { Text("Importes de la factura:", style = MaterialTheme.typography.titleSmall) }
+                // CAMPOS EDITABLES
+                item {
+                    Text(
+                        "Importes de la factura:",
+                        style = MaterialTheme.typography.titleSmall
+                    )
+                }
                 item { CampoEditable("Base Imponible (€)", baseImponible, Icons.Default.AttachMoney) { baseImponible = it } }
                 item { CampoEditable("IVA (%)", iva, Icons.Default.Percent) { iva = it } }
                 item { CampoEditable("IRPF (%)", irpf, Icons.Default.Percent) { irpf = it } }
                 item { CampoEditable("Total (€)", total, Icons.Default.Money) { total = it } }
 
+                // BOTÓN GUARDAR CAMBIOS
                 item {
                     Button(
                         onClick = {
@@ -108,8 +129,8 @@ fun PantallaEditarFactura(
     }
 }
 
-
-
+// COMPONENTES
+val FondoLabel = Color(0xFFF6F7FB)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -129,8 +150,7 @@ fun CampoSoloLectura(
                 Text(
                     text = label,
                     color = Color.Gray,
-                    modifier = Modifier
-                        .background(FondoLabel)
+                    modifier = Modifier.background(FondoLabel)
                 )
             },
             leadingIcon = icon?.let { { Icon(it, contentDescription = null, tint = AzulClaro) } },
@@ -147,8 +167,6 @@ fun CampoSoloLectura(
         )
     }
 }
-
-val FondoLabel = Color(0xFFF6F7FB)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -170,8 +188,7 @@ fun CampoEditable(
                 Text(
                     text = label,
                     color = Color.Gray,
-                    modifier = Modifier
-                        .background(FondoLabel)
+                    modifier = Modifier.background(FondoLabel)
                 )
             },
             leadingIcon = icon?.let { { Icon(it, contentDescription = null, tint = AzulPrincipal) } },
@@ -187,6 +204,3 @@ fun CampoEditable(
         )
     }
 }
-
-
-

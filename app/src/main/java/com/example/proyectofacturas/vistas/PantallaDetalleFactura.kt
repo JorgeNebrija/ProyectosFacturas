@@ -1,17 +1,18 @@
 package com.example.proyectofacturas.vistas
 
 import android.widget.Toast
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
-import android.content.Context
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -22,8 +23,8 @@ import com.example.proyectofacturas.componentes.BottomNavigationBar
 import com.example.proyectofacturas.componentes.Header
 import com.example.proyectofacturas.modelos.Factura
 import com.example.proyectofacturas.ui.theme.AzulPrincipal
+import com.example.proyectofacturas.ui.theme.NegroSuave
 import com.example.proyectofacturas.ui.theme.colorDeFondo
-import com.example.proyectofacturas.ui.theme.colorTitulo
 import com.example.proyectofacturas.viewmodels.FacturaViewModel
 
 @Composable
@@ -45,6 +46,25 @@ fun PantallaDetalleFactura(
                 .fillMaxSize()
                 .background(colorDeFondo)
         ) {
+            // FLECHA PARA VOLVER
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = { navController.popBackStack() }) {
+                    Icon(Icons.Default.ArrowBack, contentDescription = "Volver", tint = NegroSuave)
+                }
+                Text(
+                    text = "Detalle de Factura",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = NegroSuave,
+                    modifier = Modifier.padding(start = 8.dp)
+                )
+            }
+
             factura?.let {
                 DetalleFactura(it, navController, facturaViewModel, context)
             } ?: run {
@@ -108,12 +128,13 @@ fun DetalleFactura(
                     }
                 }
             }
+
             // Datos del Emisor y Receptor
             item {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(IntrinsicSize.Min), // Asegura que ambas tarjetas tengan misma altura si hay scroll
+                        .height(IntrinsicSize.Min),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     DetalleTarjeta(
@@ -140,7 +161,6 @@ fun DetalleFactura(
                     )
                 }
             }
-
 
             // Desglose de importes
             item {
@@ -227,4 +247,3 @@ fun DetalleTarjeta(titulo: String, lineas: List<String>, modifier: Modifier = Mo
         }
     }
 }
-

@@ -5,13 +5,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AttachMoney
-import androidx.compose.material.icons.filled.Badge
-import androidx.compose.material.icons.filled.Business
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Money
-import androidx.compose.material.icons.filled.Percent
-import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -27,7 +21,6 @@ import com.example.proyectofacturas.viewmodels.FacturaViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 import com.example.proyectofacturas.componentes.BottomNavigationBar
-import com.example.proyectofacturas.componentes.Header
 import com.example.proyectofacturas.ui.theme.AzulClaro
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -66,7 +59,6 @@ fun InputDeDatos(
     }
 }
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewModel) {
@@ -93,7 +85,18 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
     var tipoFactura by remember { mutableStateOf("Compra") }
 
     Scaffold(
-        topBar = { Header(navController = navController) },
+        topBar = {
+            TopAppBar(
+                title = { Text("Crear Factura") },
+                navigationIcon = {
+                    IconButton(onClick = {
+                        navController.navigate("facturas")
+                    }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
+                    }
+                }
+            )
+        },
         bottomBar = { BottomNavigationBar(navController = navController) }
     ) { padding ->
         LazyColumn(
@@ -113,10 +116,9 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
                         colors = ButtonDefaults.buttonColors(
                             containerColor = if (tipoFactura == "Compra") AzulPrincipal else Color.LightGray
                         ),
-                                shape = RoundedCornerShape(16.dp),
+                        shape = RoundedCornerShape(16.dp),
                         elevation = ButtonDefaults.elevatedButtonElevation(4.dp),
-                        modifier = Modifier
-                            .height(40.dp)
+                        modifier = Modifier.height(40.dp)
                     ) {
                         Text("Compra", color = Color.White)
                     }
@@ -128,8 +130,7 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
                         ),
                         shape = RoundedCornerShape(16.dp),
                         elevation = ButtonDefaults.elevatedButtonElevation(4.dp),
-                        modifier = Modifier
-                            .height(40.dp)
+                        modifier = Modifier.height(40.dp)
                     ) {
                         Text("Venta", color = Color.White)
                     }
@@ -151,7 +152,9 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
                         readOnly = true,
                         label = { Text("Proyecto") },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                        modifier = Modifier.fillMaxWidth().menuAnchor()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .menuAnchor()
                     )
                     ExposedDropdownMenu(
                         expanded = expanded,
@@ -228,7 +231,6 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
                 )
             }
 
-
             item {
                 Button(
                     onClick = {
@@ -253,8 +255,6 @@ fun PantallaCrearFactura(navController: NavController, viewModel: FacturaViewMod
                             tipo = tipoFactura,
                             codigoProyecto = proyectoSeleccionadoCodigo
                         )
-
-
                         viewModel.agregarFactura(nuevaFactura)
                         navController.popBackStack()
                     },
