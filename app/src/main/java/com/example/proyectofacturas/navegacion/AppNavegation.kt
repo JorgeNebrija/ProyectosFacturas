@@ -15,6 +15,7 @@ import com.example.proyectofacturas.vistas.PantallaEditarFactura
 import com.example.proyectofacturas.vistas.PantallaLogin
 import com.example.proyectofacturas.vistas.PantallaPerfil
 import com.example.proyectofacturas.vistas.PantallaRegistro
+import com.example.proyectofacturas.vistas.PantallaVideo
 
 @Composable
 fun NavigationWrapper() {
@@ -32,6 +33,9 @@ fun NavigationWrapper() {
 
         composable("facturas") {
             PantallaFacturas(navController, facturaViewModel) // Pasar el ViewModel
+        }
+        composable("pantallaVideo") {
+            PantallaVideo(navController)
         }
         composable("crear_factura") {
             PantallaCrearFactura(navController, facturaViewModel) // Pasar el ViewModel

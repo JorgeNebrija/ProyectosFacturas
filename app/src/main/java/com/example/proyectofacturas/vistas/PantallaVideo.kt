@@ -41,10 +41,10 @@ fun PantallaVideo(navController: NavHostController) {
         Spacer(modifier = Modifier.height(16.dp))
 
         AndroidView(
-            factory = { ctx ->
-                VideoView(ctx).apply {
+            factory = { context ->
+                VideoView(context).apply {
                     setVideoURI(videoUri)
-                    setMediaController(MediaController(ctx).apply {
+                    setMediaController(MediaController(context).apply {
                         setAnchorView(this@apply)
                     })
                     start()
